@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservar consulta | Barrios Abogado</title>
+  <meta name="description" content="Reserva tu consulta con asistente IA. Cuéntanos tu situación y recibe orientación personalizada en 48 horas.">
+  <link rel="icon" href="logo-barrios.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="styles.css?v=13">
+</head>
+<body>
+  <div class="sparkles" id="sparkles" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="site-header scrolled">
+    <div class="header-inner">
+      <a href="index.html" class="brand-logo">
+        <div class="brand-logo-emblem brand-logo-emblem--nav">
+          <img src="logo-barrios.png" alt="" class="brand-logo-icon" width="44" height="44">
+        </div>
+        <div class="brand-logo-copy brand-logo-copy--compact">
+          <span class="brand-logo-name">Barrios</span>
+          <span class="brand-logo-role">Abogado</span>
+        </div>
+      </a>
+      <div class="reserva-header-actions">
+        <a href="tel:+56958104264" class="btn btn-ghost btn-sm reserva-header-phone"><i data-lucide="phone"></i> +56 9 5810 4264</a>
+        <a href="index.html" class="btn btn-ghost btn-sm"><i data-lucide="arrow-left"></i> Inicio</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="reserva-page">
+    <section class="reserva-hero">
+      <div class="reserva-hero-bg" aria-hidden="true"></div>
+      <div class="container reserva-hero-grid">
+        <div class="reserva-hero-copy reveal">
+          <p class="eyebrow hero-eyebrow"><i data-lucide="sparkles" class="eyebrow-icon"></i> Asistente IA · Confidencial</p>
+          <h1>Reserva tu <span class="accent-text">consulta</span></h1>
+          <p class="lead">En 5 pasos entendemos qué necesitas, preparamos tu caso y conectamos contigo con Patricio Barrios por WhatsApp. Sin formularios eternos.</p>
+          <div class="reserva-hero-stats">
+            <button type="button" class="reserva-stat" data-popup="diagnostico"><i data-lucide="clock"></i><strong>48h</strong><span>Diagnóstico</span></button>
+            <button type="button" class="reserva-stat" data-popup="confidencialidad"><i data-lucide="lock"></i><strong>100%</strong><span>Privado</span></button>
+            <button type="button" class="reserva-stat" data-popup="whatsapp"><i data-lucide="smartphone"></i><strong>Directo</strong><span>Con abogado</span></button>
+          </div>
+          <ul class="reserva-benefits">
+            <li><i data-lucide="bot"></i> IA entrenada en las 6 áreas del estudio</li>
+            <li><i data-lucide="route"></i> Ruta legal personalizada al instante</li>
+            <li><i data-lucide="message-circle"></i> WhatsApp preconfigurado con tu caso</li>
+          </ul>
+        </div>
+        <div class="reserva-hero-visual reveal" style="--delay:.1s">
+          <img src="bg.png" alt="Estudio jurídico Barrios Abogado" class="reserva-hero-img" loading="eager">
+          <div class="reserva-hero-badge"><span class="pulse"></span><i data-lucide="bot"></i> Asistente activo</div>
+          <div class="reserva-hero-float">
+            <i data-lucide="badge-check"></i>
+            <div><strong>Patricio Barrios</strong><span>Responde personalmente</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="reserva-trust" aria-label="Garantías">
+      <div class="container reserva-trust-grid">
+        <button type="button" class="reserva-trust-chip" data-popup="confidencialidad"><i data-lucide="lock"></i> Secreto profesional</button>
+        <button type="button" class="reserva-trust-chip" data-popup="honorarios"><i data-lucide="badge-check"></i> Sin letra chica</button>
+        <button type="button" class="reserva-trust-chip" data-popup="diagnostico"><i data-lucide="zap"></i> Respuesta 48h</button>
+        <button type="button" class="reserva-trust-chip" data-popup="whatsapp"><i data-lucide="smartphone"></i> Sin secretaría</button>
+      </div>
+    </section>
+
+    <section class="reserva-flow section">
+      <div class="container">
+        <header class="reserva-flow-head reveal">
+          <p class="eyebrow"><i data-lucide="list-checks" class="eyebrow-icon"></i> Flujo guiado</p>
+          <h2>Cuéntanos tu situación</h2>
+          <p>Responde con calma — puedes reiniciar en cualquier momento. Todo queda entre tú y el estudio.</p>
+        </header>
+
+        <div class="reserva-app" id="reserva-app">
+          <aside class="reserva-sidebar">
+            <div class="guide-assistant">
+              <div class="assistant-avatar brand-logo-emblem brand-logo-emblem--xs">
+                <img src="logo-barrios.png" alt="" class="brand-logo-icon" width="36" height="36">
+              </div>
+              <div>
+                <strong>Asistente Barrios</strong>
+                <span class="assistant-status"><span class="pulse"></span> IA en línea</span>
+              </div>
+            </div>
+
+            <div class="reserva-progress-ring" aria-hidden="true">
+              <svg viewBox="0 0 80 80">
+                <circle class="ring-bg" cx="40" cy="40" r="34"></circle>
+                <circle class="ring-fill" id="reserva-ring-fill" cx="40" cy="40" r="34"></circle>
+              </svg>
+              <span class="ring-label" id="reserva-ring-pct">0%</span>
+            </div>
+
+            <div class="guide-progress-wrap">
+              <div class="guide-progress-label">
+                <span id="reserva-step-label">Paso 1 de 5</span>
+                <span id="reserva-progress-pct">0%</span>
+              </div>
+              <div class="guide-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="reserva-progress-bar">
+                <div class="guide-progress-fill" id="reserva-progress-fill"></div>
+              </div>
+            </div>
+
+            <ol class="reserva-steps-nav" id="reserva-steps-nav">
+              <li class="is-active" data-step="0"><span class="step-marker">1</span><i data-lucide="heart"></i><span class="step-text">Cómo te sientes</span></li>
+              <li data-step="1"><span class="step-marker">2</span><i data-lucide="help-circle"></i><span class="step-text">Tu situación</span></li>
+              <li data-step="2"><span class="step-marker">3</span><i data-lucide="target"></i><span class="step-text">Qué necesitas</span></li>
+              <li data-step="3"><span class="step-marker">4</span><i data-lucide="user"></i><span class="step-text">Tus datos</span></li>
+              <li data-step="4"><span class="step-marker">5</span><i data-lucide="check-circle"></i><span class="step-text">Confirmar</span></li>
+            </ol>
+          </aside>
+
+          <div class="reserva-main">
+            <div class="reserva-chat-wrap">
+              <div class="guide-chat" id="reserva-chat" aria-live="polite">
+                <div class="guide-bubble guide-bubble-ai" id="reserva-typing">
+                  <div class="typing-dots"><span></span><span></span><span></span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="reserva-stage" id="reserva-stage">
+              <p class="guide-question" id="reserva-question"></p>
+              <div class="guide-options" id="reserva-options"></div>
+            </div>
+
+            <form class="reserva-form" id="reserva-form" hidden novalidate>
+              <div class="reserva-form-head">
+                <p class="guide-question"><i data-lucide="user-check"></i> Tus datos para agendar</p>
+                <p class="reserva-form-hint">El abogado te contactará directamente. Nada se publica ni se comparte con terceros.</p>
+              </div>
+              <div class="form-grid">
+                <label class="form-field">
+                  <span><i data-lucide="user"></i> Nombre completo *</span>
+                  <input type="text" name="name" required placeholder="Ej. María González" autocomplete="name">
+                </label>
+                <label class="form-field">
+                  <span><i data-lucide="smartphone"></i> Teléfono / WhatsApp *</span>
+                  <input type="tel" name="phone" required placeholder="+56 9 1234 5678" autocomplete="tel" inputmode="tel">
+                </label>
+                <label class="form-field">
+                  <span><i data-lucide="mail"></i> Correo (opcional)</span>
+                  <input type="email" name="email" placeholder="correo@ejemplo.cl" autocomplete="email">
+                </label>
+                <label class="form-field">
+                  <span><i data-lucide="calendar-clock"></i> Mejor horario</span>
+                  <select name="slot">
+                    <option value="Mañana (9–13h)">Mañana (9–13h)</option>
+                    <option value="Tarde (14–19h)">Tarde (14–19h)</option>
+                    <option value="Lo antes posible">Lo antes posible</option>
+                    <option value="Flexible">Flexible</option>
+                  </select>
+                </label>
+                <label class="form-field form-field--full">
+                  <span><i data-lucide="file-text"></i> Cuéntanos brevemente tu caso</span>
+                  <textarea name="detail" rows="4" placeholder="Ej. Necesito recuperar una propiedad arrendada sin pagar rentas desde hace 4 meses..."></textarea>
+                </label>
+              </div>
+              <p class="form-error" id="reserva-form-error" hidden><i data-lucide="alert-circle"></i> Completa nombre y teléfono para continuar.</p>
+              <div class="reserva-form-actions">
+                <button type="button" class="btn btn-ghost" id="reserva-back"><i data-lucide="arrow-left"></i> Atrás</button>
+                <button type="submit" class="btn btn-primary btn-shimmer reserva-submit">
+                  <i data-lucide="sparkles"></i> Ver mi recomendación
+                </button>
+              </div>
+            </form>
+
+            <div class="reserva-result" id="reserva-result" hidden>
+              <div class="reserva-result-head">
+                <div class="result-badge" id="reserva-urgency"></div>
+                <div class="result-icon-wrap" id="reserva-icon"></div>
+                <h3 id="reserva-title"></h3>
+                <p class="result-empathy" id="reserva-empathy"></p>
+                <p class="result-summary" id="reserva-summary"></p>
+              </div>
+              <ol class="reserva-plan" id="reserva-plan"></ol>
+              <div class="reserva-summary-card" id="reserva-contact-summary"></div>
+              <div class="result-actions">
+                <a href="#" class="btn btn-wa btn-lg btn-shimmer" id="reserva-wa" target="_blank" rel="noopener">
+                  <i data-lucide="message-circle"></i> Confirmar por WhatsApp
+                </a>
+                <a href="planes.html" class="btn btn-ghost"><i data-lucide="badge-check"></i> Ver planes</a>
+                <button type="button" class="btn btn-ghost" id="reserva-restart">
+                  <i data-lucide="rotate-ccw"></i> Nueva solicitud
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-cta-band">
+      <div class="container footer-cta-inner">
+        <div>
+          <p class="eyebrow">¿Prefieres hablar ya?</p>
+          <h2 class="footer-cta-title">WhatsApp directo con el abogado</h2>
+        </div>
+        <a href="https://wa.me/56958104264?text=Hola.%20Quiero%20reservar%20una%20consulta." class="btn btn-wa btn-lg"><i data-lucide="message-circle"></i> Abrir chat</a>
+      </div>
+    </div>
+    <div class="container footer-bottom" style="border:none;padding:1.5rem 0">
+      <p>&copy; <span id="year"></span> Barrios Abogado · Consulta confidencial</p>
+      <p class="footer-legal">La información no constituye asesoría legal. Consulte su caso con un abogado.</p>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/56958104264" class="float-wa" aria-label="WhatsApp"><i data-lucide="message-circle"></i></a>
+
+  <div id="info-modal" class="info-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel">
+      <button type="button" class="modal-close" aria-label="Cerrar"><i data-lucide="x"></i></button>
+      <header class="modal-header">
+        <span class="modal-icon-wrap" id="modal-icon"></span>
+        <div>
+          <h2 id="modal-title"></h2>
+          <p id="modal-tagline" class="modal-tagline"></p>
+        </div>
+      </header>
+      <div id="modal-body" class="modal-body"></div>
+      <footer id="modal-footer" class="modal-footer"></footer>
+    </div>
+  </div>
+
+  <script src="shared-guide.js"></script>
+  <script src="effects.js"></script>
+  <script src="popups.js"></script>
+  <script src="routes.js"></script>
+  <script src="reserva.js"></script>
+</body>
+</html>

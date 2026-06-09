@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ley 20.009 — Fraude bancario | Barrios Abogado</title>
+  <meta name="description" content="Guía sobre la Ley 20.009 en Chile: responsabilidad bancaria por fraude, plazos de restitución y qué hacer si fue víctima de phishing o clonación.">
+  <link rel="icon" href="logo-barrios.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="styles.css?v=13">
+</head>
+<body>
+  <header class="site-header scrolled">
+    <div class="header-inner">
+      <a href="index.html" class="brand-logo">
+        <div class="brand-logo-emblem brand-logo-emblem--nav"><img src="logo-barrios.png" alt="" class="brand-logo-icon" width="44" height="44"></div>
+        <div class="brand-logo-copy brand-logo-copy--compact"><span class="brand-logo-name">Barrios</span><span class="brand-logo-role">Abogado</span></div>
+      </a>
+      <a href="reserva.html" class="btn btn-primary btn-sm btn-shimmer"><i data-lucide="zap"></i> Activar rescate</a>
+    </div>
+  </header>
+
+  <main class="subpage">
+    <section class="subpage-hero subpage-hero--urgent">
+      <div class="container">
+        <p class="eyebrow"><i data-lucide="shield-alert" class="eyebrow-icon"></i> Urgente</p>
+        <h1>Ley 20.009 — Fraude y responsabilidad bancaria</h1>
+        <p class="lead">La Ley N° 20.009 (publicada en 2005) regula la responsabilidad de bancos e instituciones financieras frente a fraudes con tarjetas y productos bancarios cuando el cliente no actuó con negligencia grave.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container subpage-content">
+        <article class="legal-block">
+          <h2><i data-lucide="alert-triangle"></i> Si le ocurrió hoy</h2>
+          <ol class="subpage-list ordered">
+            <li>Bloquee tarjetas y canales en la app del banco.</li>
+            <li>Denuncie en Carabineros o PDI y conserve el número de denuncia.</li>
+            <li>Exija por escrito al banco la restitución bajo Ley 20.009.</li>
+            <li>Conserve capturas, correos y comprobantes de movimientos.</li>
+          </ol>
+        </article>
+        <article class="legal-block">
+          <h2><i data-lucide="landmark"></i> Qué establece la ley</h2>
+          <p>El emisor debe restituir al titular los montos defraudados cuando no medie negligencia grave de su parte. El plazo de restitución depende del tipo de producto y del procedimiento, pero la exigencia formal oportuna es clave.</p>
+          <p>Si el banco se niega, puede escalarse ante la Comisión para el Mercado Financiero (CMF) o al Juzgado de Policía Local según el caso.</p>
+        </article>
+        <article class="legal-block">
+          <h2><i data-lucide="gavel"></i> Cómo le ayudamos</h2>
+          <p>Redactamos la exigencia formal, reunimos la documentación y representamos su interés ante el banco y, si corresponde, ante tribunales o la CMF.</p>
+        </article>
+        <div class="subpage-actions">
+          <a href="index.html#servicios/urgente" class="btn btn-ghost"><i data-lucide="arrow-left"></i> Ver servicios</a>
+          <button type="button" class="btn btn-info" data-popup="fraude"><i data-lucide="info"></i> Más información</button>
+          <a href="reserva.html" class="btn btn-wa btn-shimmer"><i data-lucide="message-circle"></i> Reservar ahora</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><div class="container footer-bottom" style="border:none;padding:1.5rem 0"><p>&copy; <span id="year"></span> Barrios Abogado · <a href="aviso-legal.html">Aviso legal</a></p></div></footer>
+
+  <div id="info-modal" class="info-modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel" id="modal-panel">
+      <button type="button" class="modal-close" aria-label="Cerrar"><i data-lucide="x"></i></button>
+      <div class="modal-hero" id="modal-hero" hidden></div>
+      <header class="modal-header"><span class="modal-icon-wrap" id="modal-icon"></span><div><h2 id="modal-title"></h2><p id="modal-tagline" class="modal-tagline"></p></div></header>
+      <div id="modal-body" class="modal-body"></div>
+      <footer id="modal-footer" class="modal-footer"></footer>
+    </div>
+  </div>
+
+  <script src="popups.js"></script>
+  <script src="routes.js"></script>
+  <script>document.addEventListener('DOMContentLoaded',()=>{lucide.createIcons();document.getElementById('year').textContent=new Date().getFullYear();initPopups();initRoutes();});</script>
+</body>
+</html>
