@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initPopups === 'function') initPopups();
   if (typeof initRoutes === 'function') initRoutes();
   if (typeof initContactForm === 'function') initContactForm();
+  if (typeof scheduleFooterMap === 'function') scheduleFooterMap();
   initMethodJourney();
   syncContactEmailDisplay();
 });

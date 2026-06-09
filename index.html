@@ -11,7 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="stylesheet" href="styles.css?v=16">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css?v=18">
   <link rel="preload" as="image" href="founder.jpg">
   <link rel="preload" as="image" href="bg.png">
 </head>
@@ -638,107 +639,156 @@
       </div>
     </section>
 
-    <!-- CONTACTO -->
-    <section id="contacto" class="contact-pro section section-alt">
-      <div class="container">
-        <div class="contact-pro-grid reveal">
-          <aside class="contact-pro-aside">
+    <!-- CONTACTO + FOOTER UNIFICADO -->
+    <div class="contact-footer-hub" id="contacto">
+      <section class="contact-hub section">
+        <div class="contact-hub-ambient" aria-hidden="true"></div>
+        <div class="container">
+          <header class="contact-hub-head reveal">
             <p class="eyebrow"><i data-lucide="mail" class="eyebrow-icon"></i> Contacto</p>
-            <h2>Escríbanos su consulta</h2>
-            <p class="contact-pro-lead">Cuéntenos su situación y recibirá respuesta en el estudio. Toda la información queda bajo secreto profesional.</p>
-            <ul class="contact-pro-channels">
-              <li>
-                <span class="channel-icon"><i data-lucide="mail"></i></span>
-                <div>
-                  <strong>Correo</strong>
-                  <a href="mailto:contacto@barriosabogado.cl" id="contact-email-display">contacto@barriosabogado.cl</a>
-                </div>
-              </li>
-              <li>
-                <span class="channel-icon"><i data-lucide="smartphone"></i></span>
-                <div>
-                  <strong>WhatsApp</strong>
-                  <a href="https://wa.me/56958104264">+56 9 5810 4264</a>
-                </div>
-              </li>
-              <li>
-                <span class="channel-icon"><i data-lucide="clock"></i></span>
-                <div>
-                  <strong>Horario</strong>
-                  <span>Lun – Vie · 09:00 – 19:00</span>
-                </div>
-              </li>
-              <li>
-                <span class="channel-icon"><i data-lucide="map-pin"></i></span>
-                <div>
-                  <strong>Atención</strong>
-                  <span>Chile · Presencial y remoto</span>
-                </div>
-              </li>
-            </ul>
-            <a href="reserva.html" class="contact-pro-alt">
-              <i data-lucide="sparkles"></i> ¿Prefiere la guía con IA? Reservar consulta →
-            </a>
-          </aside>
+            <h2>Conversemos sobre su caso</h2>
+            <p class="contact-hub-lead">Formulario inteligente, respuesta del estudio y ubicación en un solo lugar. Todo bajo secreto profesional.</p>
+          </header>
 
-          <div class="contact-pro-main">
-            <form class="contact-pro-form" id="contact-form" novalidate>
-              <div class="contact-pro-form-head">
-                <h3><i data-lucide="send"></i> Formulario de contacto</h3>
-                <p>Los campos marcados con * son obligatorios.</p>
-              </div>
-              <div class="form-grid contact-form-grid">
-                <label class="form-field">
-                  <span>Nombre completo *</span>
-                  <input type="text" name="name" required autocomplete="name" placeholder="Su nombre">
-                </label>
-                <label class="form-field">
-                  <span>Correo electrónico *</span>
-                  <input type="email" name="email" required autocomplete="email" placeholder="correo@ejemplo.cl">
-                </label>
-                <label class="form-field">
-                  <span>Teléfono / WhatsApp</span>
-                  <input type="tel" name="phone" autocomplete="tel" placeholder="+56 9 0000 0000">
-                </label>
-                <label class="form-field">
-                  <span>Área de consulta</span>
-                  <select name="area">
-                    <option value="Patrimonial">Patrimonial</option>
-                    <option value="Familia">Familia</option>
-                    <option value="Fraude Ley 20.009">Fraude Ley 20.009</option>
-                    <option value="Consumidor">Defensa ciudadana</option>
-                    <option value="Notarial">Notarial</option>
-                    <option value="Corporativo">Corporativo</option>
-                    <option value="Otro">Otro</option>
-                  </select>
-                </label>
-                <label class="form-field form-field--full">
-                  <span>Mensaje *</span>
-                  <textarea name="message" rows="5" required placeholder="Describa brevemente su situación o consulta..."></textarea>
-                </label>
-              </div>
-              <label class="contact-pro-consent">
-                <input type="checkbox" name="consent" required>
-                <span>Acepto que mis datos se utilicen únicamente para responder mi consulta, conforme al secreto profesional.</span>
-              </label>
-              <button type="submit" class="btn btn-primary btn-lg btn-block btn-shimmer">
-                <i data-lucide="send"></i> Enviar consulta
-              </button>
-            </form>
+          <div class="contact-hub-shell reveal">
+            <div class="contact-hub-form-panel">
+              <form class="contact-dynamic-form" id="contact-form" novalidate>
+                <div class="contact-form-progress" aria-hidden="true">
+                  <div class="contact-form-progress-meta">
+                    <span id="contact-progress-label">Comience su consulta</span>
+                    <span id="contact-progress-pct">0%</span>
+                  </div>
+                  <div class="contact-form-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="contact-progress-bar">
+                    <div class="contact-form-progress-fill" id="contact-progress-fill"></div>
+                  </div>
+                </div>
 
-            <div class="contact-pro-success" id="contact-success" hidden>
-              <div class="contact-success-icon"><i data-lucide="circle-check"></i></div>
-              <h3>Consulta enviada</h3>
-              <p>Hemos recibido su mensaje. El estudio responderá a la brevedad al correo indicado.</p>
-              <a href="reserva.html" class="btn btn-ghost"><i data-lucide="calendar-check"></i> Reservar consulta guiada</a>
+                <div class="form-grid contact-form-grid">
+                  <label class="form-field form-field--float">
+                    <input type="text" name="name" id="contact-name" required autocomplete="name" placeholder=" ">
+                    <span class="form-field-label">Nombre completo *</span>
+                    <span class="form-field-status" aria-hidden="true"></span>
+                  </label>
+                  <label class="form-field form-field--float">
+                    <input type="email" name="email" id="contact-email" required autocomplete="email" placeholder=" ">
+                    <span class="form-field-label">Correo electrónico *</span>
+                    <span class="form-field-status" aria-hidden="true"></span>
+                  </label>
+                  <label class="form-field form-field--float">
+                    <input type="tel" name="phone" id="contact-phone" autocomplete="tel" placeholder=" ">
+                    <span class="form-field-label">Teléfono / WhatsApp</span>
+                    <span class="form-field-status" aria-hidden="true"></span>
+                  </label>
+                  <div class="form-field form-field--full contact-area-field">
+                    <span class="contact-area-label">Área de consulta</span>
+                    <div class="contact-area-chips" role="group" aria-label="Área de consulta">
+                      <button type="button" class="contact-area-chip is-active" data-area="Patrimonial">Patrimonial</button>
+                      <button type="button" class="contact-area-chip" data-area="Familia">Familia</button>
+                      <button type="button" class="contact-area-chip" data-area="Fraude Ley 20.009">Fraude</button>
+                      <button type="button" class="contact-area-chip" data-area="Consumidor">Consumidor</button>
+                      <button type="button" class="contact-area-chip" data-area="Notarial">Notarial</button>
+                      <button type="button" class="contact-area-chip" data-area="Corporativo">Corporativo</button>
+                    </div>
+                    <input type="hidden" name="area" id="contact-area" value="Patrimonial">
+                  </div>
+                  <label class="form-field form-field--float form-field--full">
+                    <textarea name="message" id="contact-message" rows="4" required maxlength="500" placeholder=" "></textarea>
+                    <span class="form-field-label">Mensaje *</span>
+                    <span class="form-field-counter" id="contact-char-count">0 / 500</span>
+                    <span class="form-field-status" aria-hidden="true"></span>
+                  </label>
+                </div>
+
+                <label class="contact-pro-consent">
+                  <input type="checkbox" name="consent" id="contact-consent" required>
+                  <span>Acepto que mis datos se utilicen únicamente para responder mi consulta, conforme al secreto profesional.</span>
+                </label>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-block btn-shimmer contact-submit" id="contact-submit" disabled>
+                  <i data-lucide="send" class="contact-submit-icon"></i>
+                  <span class="contact-submit-text">Complete los campos obligatorios</span>
+                </button>
+              </form>
+
+              <div class="contact-pro-success" id="contact-success" hidden>
+                <div class="contact-success-icon"><i data-lucide="circle-check"></i></div>
+                <h3>Consulta enviada</h3>
+                <p>Hemos recibido su mensaje. El estudio responderá a la brevedad al correo indicado.</p>
+                <a href="reserva.html" class="btn btn-ghost"><i data-lucide="calendar-check"></i> Reservar consulta guiada</a>
+              </div>
+            </div>
+
+            <aside class="contact-hub-side">
+              <ul class="contact-pro-channels contact-pro-channels--compact">
+                <li>
+                  <span class="channel-icon"><i data-lucide="mail"></i></span>
+                  <div>
+                    <strong>Correo</strong>
+                    <a href="mailto:contacto@barriosabogado.cl" id="contact-email-display">contacto@barriosabogado.cl</a>
+                  </div>
+                </li>
+                <li>
+                  <span class="channel-icon"><i data-lucide="smartphone"></i></span>
+                  <div>
+                    <strong>WhatsApp</strong>
+                    <a href="https://wa.me/56958104264">+56 9 5810 4264</a>
+                  </div>
+                </li>
+                <li>
+                  <span class="channel-icon"><i data-lucide="clock"></i></span>
+                  <div>
+                    <strong>Horario</strong>
+                    <span>Lun – Vie · 09:00 – 19:00</span>
+                  </div>
+                </li>
+                <li>
+                  <span class="channel-icon"><i data-lucide="map-pin"></i></span>
+                  <div>
+                    <strong>Oficina</strong>
+                    <a href="#footer-map">Av. Manuel Peñafiel 1480, Of. 316-A, 3er piso</a>
+                  </div>
+                </li>
+              </ul>
+              <a href="reserva.html" class="contact-pro-alt">
+                <i data-lucide="sparkles"></i> Guía con IA →
+              </a>
+              <a href="#footer-map" class="contact-map-jump">
+                <i data-lucide="map-pin"></i> Ver ubicación en el mapa
+              </a>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer-map-band" id="footer-map">
+        <div class="footer-map-frame">
+          <div
+            id="footer-map-canvas"
+            class="footer-map-canvas"
+            role="img"
+            aria-label="Mapa: Av. Manuel Peñafiel 1480, Of. 316-A, 3er piso, Edificio Arenas, Ovalle">
+          </div>
+          <div class="footer-map-overlay">
+            <div class="footer-map-card">
+              <p class="footer-map-eyebrow"><i data-lucide="building-2"></i> Estudio Barrios Abogado</p>
+              <h3>Ovalle, Coquimbo</h3>
+              <p class="footer-map-address">Av. Manuel Peñafiel 1480, Of. 316-A, 3er piso · Edificio Arenas · Al lado del Hospital Dr. Antonio Tirado Lanas. Atención presencial y remota en Chile.</p>
+              <div class="footer-map-actions">
+                <a href="https://www.google.com/maps/dir/?api=1&amp;destination=Av.+Manuel+Pe%C3%B1afiel+1480,+Oficina+316-A,+Edificio+Arenas,+Ovalle,+Chile" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">
+                  <i data-lucide="navigation"></i> Cómo llegar
+                </a>
+                <a href="#contact-form" class="btn btn-ghost btn-sm contact-map-to-form">
+                  <i data-lucide="send"></i> Enviar consulta
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer site-footer--hub">
     <div class="footer-cta-band">
       <div class="container footer-cta-inner">
         <div>
@@ -829,10 +879,11 @@
     </div>
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="shared-guide.js"></script>
   <script src="effects.js"></script>
   <script src="popups.js"></script>
-  <script src="contact.js"></script>
+  <script src="contact.js?v=4"></script>
   <script src="routes.js"></script>
   <script src="script.js"></script>
 </body>
