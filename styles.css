@@ -2452,9 +2452,71 @@ button.trust-item:hover .trust-more svg {
 .contact-hub-form-panel {
   padding: 1.75rem 1.85rem 1.85rem;
   border-radius: var(--radius-xl);
-  background: linear-gradient(155deg, rgba(0, 51, 102, .45), rgba(0, 20, 40, .88));
-  border: 1px solid var(--border-brand);
+  background: linear-gradient(155deg, #002b52 0%, #001428 52%, #000d1a 100%);
+  border: 1px solid rgba(135, 206, 235, 0.28);
   box-shadow: 0 24px 60px rgba(0, 15, 35, .5), 0 0 0 1px rgba(135, 206, 235, .06);
+}
+.contact-hub-form-panel .contact-form-progress-meta {
+  color: var(--bone-muted);
+}
+.contact-hub-form-panel .contact-form-progress-meta #contact-progress-pct {
+  color: var(--brand-sky-light);
+  font-variant-numeric: tabular-nums;
+}
+.contact-hub-form-panel .contact-form-progress-bar {
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+.contact-hub-form-panel .form-field--float input,
+.contact-hub-form-panel .form-field--float textarea {
+  background: #001a33;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  color: var(--bone);
+  transition: border-color .25s, box-shadow .25s;
+}
+.contact-hub-form-panel .form-field--float input:focus,
+.contact-hub-form-panel .form-field--float textarea:focus {
+  outline: none;
+  border-color: var(--brand-sky);
+  box-shadow: 0 0 0 3px rgba(135, 206, 235, 0.2);
+}
+.contact-hub-form-panel .form-field--float .form-field-label {
+  color: #a8bdd0;
+}
+.contact-hub-form-panel .form-field--float.is-focused .form-field-label,
+.contact-hub-form-panel .form-field--float.has-value .form-field-label {
+  color: var(--brand-sky-light);
+}
+.contact-hub-form-panel .form-field-counter {
+  color: #8ba3b8;
+}
+.contact-hub-form-panel .form-field--float.has-value .form-field-counter {
+  color: var(--brand-sky-light);
+}
+.contact-hub-form-panel .contact-area-label {
+  color: var(--bone-muted);
+}
+.contact-hub-form-panel .contact-area-chip {
+  background: rgba(0, 26, 51, 0.72);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #a8bdd0;
+}
+.contact-hub-form-panel .contact-area-chip:hover {
+  border-color: rgba(135, 206, 235, 0.45);
+  color: var(--bone);
+  background: rgba(0, 51, 102, 0.55);
+}
+.contact-hub-form-panel .contact-pro-consent {
+  color: #a8bdd0;
+}
+.contact-hub-form-panel .contact-pro-consent:has(input:checked) {
+  color: var(--bone-muted);
+}
+.contact-hub-form-panel .contact-submit:disabled {
+  opacity: 0.72;
+  color: var(--brand-navy);
+  background: rgba(255, 255, 255, 0.88);
 }
 .contact-hub-side {
   display: flex;
@@ -2715,7 +2777,29 @@ button.trust-item:hover .trust-more svg {
   position: relative;
   height: clamp(300px, 38vw, 420px);
   overflow: hidden;
-  background: var(--navy-deep);
+  background: var(--midnight);
+}
+.footer-map-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    165deg,
+    rgba(0, 51, 102, 0.38) 0%,
+    rgba(0, 26, 51, 0.52) 45%,
+    rgba(0, 13, 26, 0.62) 100%
+  );
+  mix-blend-mode: color;
+}
+.footer-map-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(242, 237, 230, 0.06) 0%, transparent 18%);
 }
 .footer-map-canvas {
   width: 100%;
@@ -2724,19 +2808,35 @@ button.trust-item:hover .trust-more svg {
 }
 .footer-map-canvas.leaflet-container {
   font-family: var(--font-body);
-  filter: grayscale(20%) sepia(8%) hue-rotate(175deg) saturate(0.95) brightness(0.88) contrast(1.05);
+  background: var(--midnight);
+  filter: grayscale(100%) brightness(0.38) contrast(1.18) sepia(0.22) hue-rotate(192deg) saturate(0.55);
   transition: filter .6s var(--ease);
 }
 .footer-map-frame:hover .footer-map-canvas.leaflet-container {
-  filter: grayscale(5%) sepia(4%) hue-rotate(175deg) saturate(1.05) brightness(0.95) contrast(1.02);
+  filter: grayscale(100%) brightness(0.44) contrast(1.14) sepia(0.2) hue-rotate(192deg) saturate(0.62);
+}
+.footer-map-canvas .leaflet-control-zoom {
+  border: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 .footer-map-canvas .leaflet-control-zoom a {
-  color: var(--brand-navy);
-  border-color: rgba(0, 51, 102, .2);
+  background: rgba(0, 26, 51, 0.92);
+  color: var(--brand-sky-light);
+  border-color: rgba(135, 206, 235, 0.22);
+}
+.footer-map-canvas .leaflet-control-zoom a:hover {
+  background: rgba(0, 51, 102, 0.95);
+  color: var(--bone);
 }
 .footer-map-canvas .leaflet-control-attribution {
   font-size: 10px;
-  background: rgba(255, 255, 255, .82);
+  background: rgba(0, 20, 40, 0.78);
+  color: rgba(197, 217, 232, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.footer-map-canvas .leaflet-control-attribution a {
+  color: var(--brand-sky-light);
 }
 .footer-map-leaflet-pin {
   background: none !important;
@@ -2770,24 +2870,34 @@ button.trust-item:hover .trust-more svg {
 }
 .footer-map-canvas .leaflet-popup-content-wrapper {
   border-radius: 12px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, .25);
+  background: rgba(0, 26, 51, 0.94);
+  border: 1px solid rgba(135, 206, 235, 0.28);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .45);
+  color: var(--bone);
 }
 .footer-map-canvas .leaflet-popup-content {
   margin: 12px 14px;
   font-size: .85rem;
   line-height: 1.45;
-  color: var(--brand-navy);
+  color: var(--bone-muted);
+}
+.footer-map-canvas .leaflet-popup-content strong {
+  color: var(--bone);
 }
 .footer-map-canvas .leaflet-popup-content a {
-  color: var(--brand-navy);
+  color: var(--brand-sky-light);
   font-weight: 600;
+}
+.footer-map-canvas .leaflet-popup-tip {
+  background: rgba(0, 26, 51, 0.94);
+  border: 1px solid rgba(135, 206, 235, 0.18);
 }
 .footer-map-overlay {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 500;
-  background: linear-gradient(105deg, rgba(0, 20, 40, .78) 0%, rgba(0, 20, 40, .35) 38%, transparent 58%);
+  background: linear-gradient(105deg, rgba(0, 20, 40, .62) 0%, rgba(0, 20, 40, .22) 42%, transparent 62%);
 }
 .footer-map-card {
   position: absolute;
