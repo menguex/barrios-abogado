@@ -111,7 +111,7 @@ const POPUP_DATA = {
     icon: 'file-signature',
     title: 'Certeza jurídica',
     tagline: 'Notaría · Contratos · Testamentos',
-    image: 'https://images.unsplash.com/photo-1586281380349-a6166864f1fa?auto=format&fit=crop&q=85&w=1200&h=640',
+    image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=85&w=1200&h=640',
     intro: 'Un instrumento mal redactado hoy es un conflicto de años mañana. Revisamos, corregimos y protocolizamos con precisión notarial.',
     blocks: [
       { icon: 'file-check', title: 'Instrumentos', text: 'Compraventas, testamentos, mandatos, poderes y cesiones sin margen al error.' },
