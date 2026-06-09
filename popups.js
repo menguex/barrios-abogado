@@ -37,7 +37,7 @@ const POPUP_DATA = {
     title: 'WhatsApp directo',
     tagline: 'Sin intermediarios',
     blocks: [
-      { icon: 'user-check', title: 'Con el abogado', text: 'Mensajes atendidos por Patricio Barrios, no por un bot corporativo.' },
+      { icon: 'user-check', title: 'Con el abogado', text: 'Mensajes atendidos por Felipe Barrios Callejas, no por un bot corporativo.' },
       { icon: 'timer', title: '< 24 horas', text: 'Consultas prioritarias con respuesta en menos de un día hábil.' },
       { icon: 'paperclip', title: 'Envíe documentos', text: 'Fotos de contratos, denuncias o cartas del banco — todo desde el chat.' },
     ],
@@ -269,6 +269,36 @@ const POPUP_DATA = {
     ],
     cta: { label: 'Leer filosofía completa', href: 'filosofia.html', style: 'primary' },
   },
+  abogado_ficha: {
+    icon: 'scale',
+    title: 'Felipe Barrios Callejas',
+    tagline: 'Abogado titular · Barrios Abogado · Ovalle',
+    dossier: true,
+    image: 'assets/felipe-barrios-portrait.jpg',
+    intro: 'Abogado con trayectoria en derecho civil, familia, laboral y fraude bancario. Estrategia clara, honorarios definidos por escrito y primera evaluación en 48 horas.',
+    signature: { logo: 'logo-barrios.png', firm: 'Barrios Abogado', meta: 'Ejercicio profesional desde 2016 · Chile' },
+    metrics: [
+      { icon: 'briefcase', value: '+9', label: 'Años de ejercicio' },
+      { icon: 'zap', value: '48h', label: 'Primera evaluación' },
+      { icon: 'user-check', value: '1:1', label: 'Con su abogado', accent: true },
+    ],
+    practiceTags: ['Patrimonial', 'Familia', 'Ley 20.009', 'Laboral', 'Consumidor', 'Corporativo'],
+    blocks: [
+      { icon: 'shield-check', title: 'Civil, familia y consumidor', text: 'Enfoque patrimonial con estrategia procesal clara y honorarios definidos por etapa.' },
+      { icon: 'landmark', title: 'Ley 20.009', text: 'Defensa ante fraude bancario, clonación y operaciones no autorizadas con protocolo de restitución.' },
+      { icon: 'gavel', title: 'Tribunales y mediación', text: 'Representación en tribunales civiles, familia, JPL y mediación vía OJV cuando conviene.' },
+      { icon: 'building-2', title: 'Atención presencial', text: 'Edificio Arenas — Av. Manuel Peñafiel 1480, Of. 316-A, 3er piso, Ovalle.' },
+    ],
+    quote: {
+      text: '«La excelencia legal no es ruido en tribunales: es orden, claridad y tranquilidad en su vida.»',
+      cite: '— Felipe Barrios Callejas',
+    },
+    ctas: [
+      { label: 'Agendar con Felipe', href: 'reserva.html', style: 'primary', icon: 'calendar-check' },
+      { label: 'WhatsApp directo', href: 'https://wa.me/56958104264?text=Hola%20Felipe,%20quisiera%20conversar%20sobre%20mi%20caso.', style: 'wa', icon: 'message-circle', external: true },
+      { label: 'Ver ubicación', href: '#contacto', style: 'ghost', icon: 'map-pin' },
+    ],
+  },
 };
 
 function initPopups() {
@@ -294,6 +324,19 @@ function initPopups() {
 
   const modalPanel = document.getElementById('modal-panel');
   const modalHero = document.getElementById('modal-hero');
+  const modalHeader = modal.querySelector('.modal-header');
+
+  function clearDossierPortrait() {
+    modalHeader?.classList.remove('modal-header--dossier');
+    modalHeader?.querySelector('.modal-dossier-portrait')?.remove();
+  }
+
+  function renderCtaButton(cta) {
+    const cls = cta.style === 'wa' ? 'btn btn-wa' : cta.style === 'ghost' ? 'btn btn-ghost' : 'btn btn-primary btn-shimmer';
+    const ext = cta.external ? ' target="_blank" rel="noopener"' : '';
+    const icon = cta.icon || 'arrow-right';
+    return `<a href="${cta.href}" class="${cls}"${ext}><i data-lucide="${icon}"></i> ${cta.label}</a>`;
+  }
 
   function openPopup(id) {
     const data = POPUP_DATA[id];
@@ -305,9 +348,27 @@ function initPopups() {
     taglineEl.textContent = data.tagline || '';
 
     const isRich = Boolean(data.image || data.intro);
-    modalPanel?.classList.toggle('modal-panel--rich', isRich);
+    const isDossier = Boolean(data.dossier);
+    modalPanel?.classList.toggle('modal-panel--rich', isRich && !isDossier);
+    modalPanel?.classList.toggle('modal-panel--dossier', isDossier);
+    clearDossierPortrait();
 
-    if (data.image && modalHero) {
+    if (isDossier && data.image && modalHeader) {
+      modalHero.hidden = true;
+      modalHero.innerHTML = '';
+      modalHeader.classList.add('modal-header--dossier');
+      const portrait = document.createElement('div');
+      portrait.className = 'modal-dossier-portrait';
+      portrait.innerHTML = `
+        <img
+          src="${data.image}"
+          alt="${data.title}"
+          width="128"
+          height="160"
+          decoding="async"
+        >`;
+      modalHeader.insertBefore(portrait, modalHeader.firstChild);
+    } else if (data.image && modalHero) {
       modalHero.hidden = false;
       modalHero.innerHTML = `
         <div class="img-wrap modal-hero-wrap">
@@ -325,6 +386,40 @@ function initPopups() {
 
     let html = '';
     if (data.intro) html += `<p class="modal-intro">${data.intro}</p>`;
+
+    if (data.signature) {
+      html += `
+        <div class="counsel-signature counsel-signature--modal">
+          <img src="${data.signature.logo}" alt="" width="44" height="44" class="counsel-signature-logo">
+          <div>
+            <span class="counsel-signature-firm">${data.signature.firm}</span>
+            <span class="counsel-signature-meta">${data.signature.meta}</span>
+          </div>
+        </div>`;
+    }
+
+    if (data.metrics?.length) {
+      html += '<div class="counsel-metrics counsel-metrics--premium counsel-metrics--modal">';
+      data.metrics.forEach((m) => {
+        html += `
+          <div class="counsel-metric${m.accent ? ' counsel-metric--accent' : ''}">
+            <i data-lucide="${m.icon}"></i>
+            <strong>${m.value}</strong>
+            <span>${m.label}</span>
+          </div>`;
+      });
+      html += '</div>';
+    }
+
+    if (data.practiceTags?.length) {
+      html += `
+        <div class="counsel-practice counsel-practice--modal">
+          <p class="counsel-practice-label">Áreas de práctica</p>
+          <div class="counsel-practice-tags">
+            ${data.practiceTags.map((t) => `<span>${t}</span>`).join('')}
+          </div>
+        </div>`;
+    }
 
     html += '<div class="modal-blocks">';
     data.blocks.forEach((b, i) => {
@@ -354,13 +449,21 @@ function initPopups() {
       });
       html += '</div>';
     }
+
+    if (data.quote) {
+      html += `
+        <blockquote class="counsel-quote counsel-quote--premium counsel-quote--modal">
+          <i data-lucide="quote" class="counsel-quote-icon" aria-hidden="true"></i>
+          <p>${data.quote.text}</p>
+          <cite>${data.quote.cite}</cite>
+        </blockquote>`;
+    }
     bodyEl.innerHTML = html;
 
-    const cta = data.cta;
-    if (cta) {
-      const cls = cta.style === 'wa' ? 'btn btn-wa' : cta.style === 'ghost' ? 'btn btn-ghost' : 'btn btn-primary btn-shimmer';
-      const ext = cta.external ? ' target="_blank" rel="noopener"' : '';
-      footerEl.innerHTML = `<a href="${cta.href}" class="${cls}"${ext}><i data-lucide="arrow-right"></i> ${cta.label}</a>`;
+    if (data.ctas?.length) {
+      footerEl.innerHTML = `<div class="modal-footer-actions">${data.ctas.map(renderCtaButton).join('')}</div>`;
+    } else if (data.cta) {
+      footerEl.innerHTML = renderCtaButton(data.cta);
     } else {
       footerEl.innerHTML = '';
     }
@@ -387,6 +490,11 @@ function initPopups() {
         openPopup(el.dataset.popup);
       }
     });
+  });
+
+  footerEl?.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href^="#"]');
+    if (link && modal.classList.contains('is-open')) closeModal();
   });
 
   backdrop?.addEventListener('click', closeModal);

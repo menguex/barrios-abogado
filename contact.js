@@ -1,4 +1,15 @@
 /* Configuración de contacto — actualice el correo o endpoint cuando esté listo */
+const COUNSEL_CONFIG = {
+  fullName: 'Felipe Barrios Callejas',
+  firstName: 'Felipe',
+  title: 'Abogado titular',
+  firm: 'Barrios Abogado',
+  practiceSince: 2016,
+  photo: 'assets/felipe-barrios-portrait.jpg',
+  photoThumb: 'assets/felipe-barrios-thumb.jpg',
+  whatsapp: '56958104264',
+};
+
 const CONTACT_CONFIG = {
   email: 'contacto@barriosabogado.cl',
   endpoint: '', // ej: 'https://formsubmit.co/contacto@barriosabogado.cl'

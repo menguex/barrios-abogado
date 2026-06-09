@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollProgress();
   initStaggerReveal();
   initParallax();
+  initHeroVideoScroll();
   initCableSystem();
   if (typeof initPopups === 'function') initPopups();
   if (typeof initRoutes === 'function') initRoutes();

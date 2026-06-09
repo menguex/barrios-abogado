@@ -12,8 +12,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="styles.css?v=18">
-  <link rel="preload" as="image" href="founder.jpg">
+  <link rel="stylesheet" href="styles.css?v=32">
+  <link rel="preload" as="image" href="assets/felipe-barrios-portrait.jpg">
   <link rel="preload" as="image" href="bg.png">
 </head>
 <body class="is-loading">
@@ -83,6 +83,7 @@
         </div>
       </a>
       <nav class="nav-desktop" aria-label="Principal">
+        <a href="#abogado" data-nav>Abogado</a>
         <a href="#guia" data-nav>Guía</a>
         <a href="#servicios" data-nav>Servicios</a>
         <a href="#metodo" data-nav>Método</a>
@@ -97,6 +98,7 @@
       <button class="menu-toggle" aria-label="Menú" aria-expanded="false"><i data-lucide="menu"></i></button>
     </div>
     <nav class="nav-mobile" hidden>
+      <a href="#abogado">Abogado</a>
       <a href="#guia">Guía</a>
       <a href="#servicios">Servicios</a>
       <a href="#metodo">Método</a>
@@ -109,58 +111,193 @@
 
   <main>
     <!-- HERO -->
-    <section class="hero" id="inicio">
-      <div class="hero-bg-slider" aria-hidden="true">
-        <div class="hero-bg-slide is-active" data-parallax="0.2" style="background-image:url('bg.png')"></div>
+    <section class="hero hero--video" id="inicio">
+      <div class="hero-video-scroll" aria-hidden="true">
+        <video
+          class="hero-video-bg"
+          src="assets/hero/hero-scroll.mp4"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          poster="bg.png"
+        ></video>
+        <div class="hero-video-scrim"></div>
       </div>
-      <div class="hero-grid container">
-        <div class="hero-copy reveal">
+      <div class="hero-grid container hero-grid--split">
+        <div class="hero-copy reveal hero-copy--scroll">
           <p class="eyebrow hero-eyebrow"><span class="eyebrow-dot"></span> Barrios Abogado · Chile</p>
           <div class="hero-pill-row">
             <span class="pill pill-brand"><i data-lucide="shield-check"></i> Estudio verificado</span>
             <span class="pill"><i data-lucide="scale"></i> Derecho civil &amp; familia</span>
           </div>
           <h1>La excelencia legal,<br><span class="accent-text">redefinida.</span></h1>
-          <p class="lead">Asesoría estratégica, transparente y orientada a resultados. Una experiencia digital que respeta tu tiempo, tu patrimonio y tu tranquilidad.</p>
+          <p class="lead hero-lead">Asesoría estratégica, transparente y orientada a resultados. Una experiencia digital que respeta su tiempo, su patrimonio y su tranquilidad.</p>
           <div class="hero-rating">
             <div class="stars hero-stars" aria-label="5 de 5">
               <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
             </div>
             <span><strong>5.0</strong> · Atención directa · Sin intermediarios</span>
           </div>
-          <div class="hero-actions">
-            <a href="reserva.html" class="btn btn-primary btn-lg btn-shimmer">
+          <div class="hero-actions hero-actions--split">
+            <a href="reserva.html" class="btn btn-primary btn-lg btn-shimmer hero-cta-primary">
               <i data-lucide="calendar-check"></i> Reservar consulta con IA
             </a>
-            <a href="#guia" class="btn btn-ghost btn-lg">
-              <i data-lucide="sparkles"></i> Guía rápida
-            </a>
-            <a href="https://wa.me/56958104264?text=Hola,%20me%20gustar%C3%ADa%20solicitar%20m%C3%A1s%20informaci%C3%B3n" class="btn btn-wa btn-lg">
-              <i data-lucide="message-circle"></i> Consulta directa con el abogado
-            </a>
-          </div>
-        </div>
-        <div class="hero-visual reveal" style="--delay:.12s">
-          <div class="hero-frame">
-            <div class="hero-portrait-slider hero-portrait-single" id="hero-portrait-slider">
-              <img src="founder.jpg" alt="Patricio Barrios — Socio fundador" class="img-portrait hero-portrait-img" width="800" height="1000" fetchpriority="high" decoding="async">
-            </div>
-            <div class="hero-badge">
-              <img src="logo-barrios.png" alt="" class="hero-badge-logo" width="32" height="32">
-              <div><strong>Patricio Barrios</strong><span>Socio fundador</span></div>
+            <div class="hero-actions-row">
+              <a href="#guia" class="btn btn-ghost btn-lg">
+                <i data-lucide="sparkles"></i> Guía rápida
+              </a>
+              <a href="https://wa.me/56958104264?text=Hola,%20me%20gustar%C3%ADa%20solicitar%20m%C3%A1s%20informaci%C3%B3n" class="btn btn-wa btn-lg">
+                <i data-lucide="message-circle"></i> Consulta directa
+              </a>
             </div>
           </div>
         </div>
+
+        <div class="hero-stage reveal hero-stage--scroll" style="--delay:.14s">
+          <div class="hero-stage-grid" aria-hidden="false">
+            <a href="#abogado" class="hero-counsel-card">
+              <div class="hero-counsel-emblem" aria-hidden="true">
+                <img src="logo-barrios.png" alt="" width="44" height="44">
+              </div>
+              <div class="hero-counsel-copy">
+                <span class="hero-counsel-label">Abogado titular</span>
+                <strong>Felipe Barrios Callejas</strong>
+                <span class="hero-counsel-meta">Ovalle · Respuesta en 48h</span>
+              </div>
+              <i data-lucide="arrow-up-right" class="hero-counsel-arrow"></i>
+            </a>
+
+            <div class="hero-metric-board">
+              <div class="hero-metric-card hero-metric-card--a">
+                <i data-lucide="zap"></i>
+                <div>
+                  <strong>48h</strong>
+                  <span>Diagnóstico</span>
+                </div>
+              </div>
+              <div class="hero-metric-card hero-metric-card--b">
+                <i data-lucide="briefcase"></i>
+                <div>
+                  <strong>+9</strong>
+                  <span>Años</span>
+                </div>
+              </div>
+              <div class="hero-metric-card hero-metric-card--c">
+                <i data-lucide="user-check"></i>
+                <div>
+                  <strong>1:1</strong>
+                  <span>Directo</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-trust-strip">
+              <span><i data-lucide="lock"></i> Confidencial</span>
+              <span><i data-lucide="badge-check"></i> Honorarios claros</span>
+              <span><i data-lucide="map-pin"></i> Edificio Arenas</span>
+            </div>
+          </div>
+          <div class="hero-stage-accent" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="hero-scroll-cue container" aria-hidden="true">
+        <span>Desplácese</span>
+        <i data-lucide="chevrons-down"></i>
       </div>
     </section>
 
     <!-- TRUST BAR -->
-    <section class="trust-bar" aria-label="Garantías">
-      <div class="container trust-grid">
-        <button type="button" class="trust-item" data-popup="confidencialidad"><i data-lucide="lock"></i><div><strong>Confidencialidad</strong><span>100% privado</span><em class="trust-more"><i data-lucide="info"></i> Saber más</em></div></button>
-        <button type="button" class="trust-item" data-popup="honorarios"><i data-lucide="badge-check"></i><div><strong>Honorarios claros</strong><span>Sin sorpresas</span><em class="trust-more"><i data-lucide="info"></i> Saber más</em></div></button>
-        <button type="button" class="trust-item" data-popup="diagnostico"><i data-lucide="zap"></i><div><strong>Diagnóstico 48h</strong><span>Respuesta ágil</span><em class="trust-more"><i data-lucide="info"></i> Saber más</em></div></button>
-        <button type="button" class="trust-item" data-popup="whatsapp"><i data-lucide="smartphone"></i><div><strong>WhatsApp directo</strong><span>Sin secretaría</span><em class="trust-more"><i data-lucide="info"></i> Saber más</em></div></button>
+    <section class="trust-bar section-surface-cream" aria-label="Garantías">
+      <div class="container trust-grid reveal-stagger">
+        <button type="button" class="trust-item" data-popup="confidencialidad">
+          <span class="trust-item-icon" aria-hidden="true"><i data-lucide="shield"></i></span>
+          <span class="trust-item-body">
+            <strong>Confidencialidad</strong>
+            <span class="trust-item-desc">100% privado</span>
+            <em class="trust-more">Saber más <i data-lucide="arrow-up-right"></i></em>
+          </span>
+        </button>
+        <button type="button" class="trust-item" data-popup="honorarios">
+          <span class="trust-item-icon" aria-hidden="true"><i data-lucide="badge-check"></i></span>
+          <span class="trust-item-body">
+            <strong>Honorarios claros</strong>
+            <span class="trust-item-desc">Sin sorpresas</span>
+            <em class="trust-more">Saber más <i data-lucide="arrow-up-right"></i></em>
+          </span>
+        </button>
+        <button type="button" class="trust-item" data-popup="diagnostico">
+          <span class="trust-item-icon" aria-hidden="true"><i data-lucide="zap"></i></span>
+          <span class="trust-item-body">
+            <strong>Diagnóstico 48h</strong>
+            <span class="trust-item-desc">Respuesta ágil</span>
+            <em class="trust-more">Saber más <i data-lucide="arrow-up-right"></i></em>
+          </span>
+        </button>
+        <button type="button" class="trust-item" data-popup="whatsapp">
+          <span class="trust-item-icon" aria-hidden="true"><i data-lucide="smartphone"></i></span>
+          <span class="trust-item-body">
+            <strong>WhatsApp directo</strong>
+            <span class="trust-item-desc">Sin secretaría</span>
+            <em class="trust-more">Saber más <i data-lucide="arrow-up-right"></i></em>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <!-- FICHA DEL ABOGADO -->
+    <section id="abogado" class="counsel-profile section counsel-profile--premium">
+      <div class="counsel-profile-ambient" aria-hidden="true"></div>
+      <div class="counsel-profile-gridline" aria-hidden="true"></div>
+      <div class="container">
+        <header class="counsel-profile-head reveal">
+          <p class="eyebrow"><i data-lucide="scale" class="eyebrow-icon"></i> Abogado patrocinante</p>
+          <h2>Conozca a quien lidera su caso</h2>
+          <p class="section-desc">Sin secretarías ni call centers. Una ficha clara del profesional que lo representa, con contacto directo desde el primer mensaje.</p>
+        </header>
+
+        <article class="counsel-strip counsel-strip--premium cable-border reveal" data-cable-draw>
+          <div class="counsel-strip-thumb">
+            <img
+              src="assets/felipe-barrios-portrait.jpg"
+              alt="Felipe Barrios Callejas — Abogado titular"
+              width="112"
+              height="140"
+              loading="eager"
+              decoding="async"
+            >
+            <span class="counsel-strip-live">
+              <span class="counsel-status-dot" aria-hidden="true"></span>
+              Ovalle
+            </span>
+          </div>
+
+          <div class="counsel-strip-main">
+            <p class="counsel-role">Abogado titular · Región de Coquimbo</p>
+            <h3>Felipe Barrios Callejas</h3>
+            <p class="counsel-strip-bio">Trayectoria en derecho civil, familia, laboral y fraude bancario. Estrategia clara, honorarios por escrito y primera evaluación en 48 horas.</p>
+            <div class="counsel-strip-metrics">
+              <span><i data-lucide="briefcase"></i> <strong>+9</strong> años</span>
+              <span><i data-lucide="zap"></i> <strong>48h</strong> evaluación</span>
+              <span><i data-lucide="user-check"></i> <strong>1:1</strong> directo</span>
+            </div>
+          </div>
+
+          <div class="counsel-strip-aside">
+            <div class="counsel-strip-firm">
+              <img src="logo-barrios.png" alt="" width="36" height="36" class="counsel-signature-logo">
+              <div>
+                <span class="counsel-signature-firm">Barrios Abogado</span>
+                <span class="counsel-signature-meta">Desde 2016 · Chile</span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary btn-shimmer counsel-strip-cta" data-popup="abogado_ficha">
+              <i data-lucide="user-round-search"></i> Ver ficha completa
+            </button>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -286,7 +423,7 @@
     </section>
 
     <!-- FILOSOFÍA -->
-    <section id="filosofia" class="philosophy section philosophy-feature">
+    <section id="filosofia" class="philosophy section philosophy-feature section-surface-cream">
       <div class="philosophy-feature-glow" aria-hidden="true"></div>
       <div class="container">
         <header class="philosophy-feature-head reveal">
@@ -640,7 +777,7 @@
     </section>
 
     <!-- CONTACTO + FOOTER UNIFICADO -->
-    <div class="contact-footer-hub" id="contacto">
+    <div class="contact-footer-hub section-surface-cream" id="contacto">
       <section class="contact-hub section">
         <div class="contact-hub-ambient" aria-hidden="true"></div>
         <div class="container">
@@ -882,7 +1019,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="shared-guide.js"></script>
   <script src="effects.js"></script>
-  <script src="popups.js"></script>
+  <script src="popups.js?v=2"></script>
   <script src="contact.js?v=4"></script>
   <script src="routes.js"></script>
   <script src="script.js"></script>

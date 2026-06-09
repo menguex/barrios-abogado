@@ -115,3 +115,93 @@ function initParallax() {
   window.addEventListener('resize', onScroll, { passive: true });
   update();
 }
+
+function initHeroVideoScroll() {
+  const hero = document.querySelector('.hero--video');
+  const video = hero?.querySelector('.hero-video-bg');
+  const copy = hero?.querySelector('.hero-copy--scroll');
+  const stage = hero?.querySelector('.hero-stage--scroll');
+  if (!hero || !video) return;
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const ensurePlay = () => {
+    if (reduced) return;
+    const p = video.play();
+    if (p && typeof p.catch === 'function') p.catch(() => {});
+  };
+
+  ensurePlay();
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) ensurePlay();
+  });
+
+  if (reduced) return;
+
+  let ticking = false;
+
+  const update = () => {
+    const rect = hero.getBoundingClientRect();
+    const height = Math.max(rect.height, 1);
+    const progress = Math.min(Math.max(-rect.top / height, 0), 1);
+    const parallaxY = progress * 140;
+    const scale = 1 + progress * 0.1;
+    const fade = Math.max(0, 1 - progress * 1.12);
+
+    video.style.transform = `translate3d(0, ${parallaxY}px, 0) scale(${scale})`;
+
+    if (copy) {
+      copy.style.opacity = String(fade);
+      copy.style.transform = `translate3d(0, ${progress * -48}px, 0)`;
+    }
+
+    if (stage) {
+      stage.style.opacity = String(fade);
+      stage.style.transform = `translate3d(0, ${progress * -32}px, 0) scale(${1 - progress * 0.03})`;
+    }
+
+    ticking = false;
+  };
+
+  const onScroll = () => {
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  };
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  update();
+}
+
+function initJusticeTilt() {
+  const scene = document.getElementById('hero-justice-scene');
+  const model = scene?.querySelector('.justice-3d');
+  if (!scene || !model || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  let raf = 0;
+  let targetY = 0;
+  let targetX = 0;
+
+  const apply = () => {
+    model.style.setProperty('--tilt-y', `${targetY}deg`);
+    model.style.setProperty('--tilt-x', `${targetX}deg`);
+    raf = 0;
+  };
+
+  scene.addEventListener('pointermove', (e) => {
+    const rect = scene.getBoundingClientRect();
+    const nx = (e.clientX - rect.left) / rect.width - 0.5;
+    const ny = (e.clientY - rect.top) / rect.height - 0.5;
+    targetY = nx * 22;
+    targetX = ny * -10;
+    if (!raf) raf = requestAnimationFrame(apply);
+  }, { passive: true });
+
+  scene.addEventListener('pointerleave', () => {
+    targetY = 0;
+    targetX = 0;
+    if (!raf) raf = requestAnimationFrame(apply);
+  });
+}

@@ -134,7 +134,7 @@ function initReservaFlow() {
     setNav(3);
     updateProgress(80, `Paso 4 de ${TOTAL}`);
     formError.hidden = true;
-    await showAi('Perfecto. Solo necesito tus datos de contacto para que Patricio Barrios te responda directamente.');
+    await showAi('Perfecto. Solo necesito sus datos de contacto para que Felipe Barrios Callejas le responda directamente.');
     form.querySelector('input[name="name"]')?.focus();
   }
 
