@@ -5,9 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('year').textContent = new Date().getFullYear();
 
   const header = document.querySelector('.site-header');
-  window.addEventListener('scroll', () => {
-    header.classList.toggle('scrolled', window.scrollY > 40);
-  }, { passive: true });
+  if (header && typeof ScrollBus !== 'undefined') {
+    let headerScrolled = header.classList.contains('scrolled');
+    ScrollBus.subscribe((scrollY) => {
+      const next = scrollY > 40;
+      if (next !== headerScrolled) {
+        headerScrolled = next;
+        header.classList.toggle('scrolled', next);
+      }
+    });
+  }
 
   const menuToggle = document.querySelector('.menu-toggle');
   const navMobile = document.querySelector('.nav-mobile');
@@ -64,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initParallax();
   initHeroVideoScroll();
   initCableSystem();
+  if (typeof bootScrollBus === 'function') bootScrollBus();
   if (typeof initPopups === 'function') initPopups();
   if (typeof initRoutes === 'function') initRoutes();
   if (typeof initContactForm === 'function') initContactForm();
@@ -329,26 +337,29 @@ function initCableSystem() {
     });
   }
 
-  function updateRail() {
-    const docH = document.documentElement.scrollHeight - window.innerHeight;
-    const pct = docH > 0 ? Math.min(window.scrollY / docH, 1) : 0;
-    if (fill) fill.style.height = `${pct * 100}%`;
+  function updateRail(scrollY, vh, _docH, pct) {
+    if (fill) fill.style.transform = `scaleY(${pct})`;
 
-    const mid = window.scrollY + window.innerHeight * 0.42;
+    const mid = scrollY + vh * 0.42;
     let activeIdx = 0;
     nodes.forEach(({ section }, i) => {
       const top = section.offsetTop;
       if (top <= mid) activeIdx = i;
     });
-    nodes.forEach(({ btn }, i) => btn.classList.toggle('is-active', i === activeIdx));
+    nodes.forEach(({ btn }, i) => {
+      const active = i === activeIdx;
+      if (btn.classList.contains('is-active') !== active) {
+        btn.classList.toggle('is-active', active);
+      }
+    });
   }
 
-  window.addEventListener('scroll', updateRail, { passive: true });
+  if (typeof ScrollBus !== 'undefined') {
+    ScrollBus.subscribe(updateRail);
+  }
   window.addEventListener('load', () => {
     cableEls.forEach(({ size }) => size());
-    updateRail();
   });
-  updateRail();
 }
 
 /* ===== QUICK ACCESS (Turismo Ovalle) ===== */
@@ -411,7 +422,11 @@ function initStickyCta() {
     guiaObserver.observe(guia);
   }
 
-  window.addEventListener('scroll', update, { passive: true });
+  if (typeof ScrollBus !== 'undefined') {
+    ScrollBus.subscribe(() => update());
+  } else {
+    window.addEventListener('scroll', update, { passive: true });
+  }
   update();
 }
 
@@ -464,25 +479,34 @@ function initCounters() {
   counters.forEach((c) => obs.observe(c));
 }
 
-/* ===== PRELOADER (2s) ===== */
+/* ===== PRELOADER ===== */
 function initPreloader() {
   const preloader = document.getElementById('preloader');
   const fill = document.getElementById('preloader-fill');
   if (!preloader) return;
 
-  const duration = 2000;
+  const finish = () => {
+    preloader.classList.add('is-done');
+    document.body.classList.remove('is-loading');
+    try { sessionStorage.setItem('ba_booted', '1'); } catch (_) { /* ignore */ }
+  };
+
+  if (sessionStorage.getItem('ba_booted')) {
+    if (fill) fill.style.width = '100%';
+    finish();
+    return;
+  }
+
+  const duration = 1100;
   const start = performance.now();
 
   function tick(now) {
     const pct = Math.min((now - start) / duration, 1);
-    fill.style.width = `${pct * 100}%`;
+    if (fill) fill.style.width = `${pct * 100}%`;
     if (pct < 1) {
       requestAnimationFrame(tick);
     } else {
-      setTimeout(() => {
-        preloader.classList.add('is-done');
-        document.body.classList.remove('is-loading');
-      }, 150);
+      finish();
     }
   }
 

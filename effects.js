@@ -1,8 +1,48 @@
+/* Scroll unificado — un solo requestAnimationFrame por frame */
+const ScrollBus = (() => {
+  const fns = [];
+  let pending = false;
+
+  function flush() {
+    pending = false;
+    const scrollY = window.scrollY;
+    const vh = window.innerHeight;
+    const docH = Math.max(document.documentElement.scrollHeight - vh, 0);
+    const pct = docH > 0 ? Math.min(scrollY / docH, 1) : 0;
+    for (let i = 0; i < fns.length; i += 1) fns[i](scrollY, vh, docH, pct);
+  }
+
+  function schedule() {
+    if (!pending) {
+      pending = true;
+      requestAnimationFrame(flush);
+    }
+  }
+
+  return {
+    subscribe(fn) {
+      fns.push(fn);
+      return () => {
+        const idx = fns.indexOf(fn);
+        if (idx >= 0) fns.splice(idx, 1);
+      };
+    },
+    start() {
+      window.addEventListener('scroll', schedule, { passive: true });
+      window.addEventListener('resize', schedule, { passive: true });
+      schedule();
+    },
+  };
+})();
+
+const motionReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const lowMotionDevice = motionReduced || window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+
 function initSparkles() {
   const layer = document.getElementById('sparkles');
-  if (!layer) return;
-  const count = window.innerWidth < 768 ? 18 : 32;
-  for (let i = 0; i < count; i++) {
+  if (!layer || lowMotionDevice) return;
+  const count = window.innerWidth < 1024 ? 14 : 22;
+  for (let i = 0; i < count; i += 1) {
     const s = document.createElement('span');
     s.className = 'sparkle';
     s.style.left = `${Math.random() * 100}%`;
@@ -33,29 +73,13 @@ function initScrollProgress() {
   const fill = document.getElementById('scroll-progress-fill');
   if (!fill) return;
 
-  let ticking = false;
-
-  const update = () => {
-    const docH = document.documentElement.scrollHeight - window.innerHeight;
-    const pct = docH > 0 ? Math.min(window.scrollY / docH, 1) : 0;
-    fill.style.width = `${pct * 100}%`;
-    ticking = false;
-  };
-
-  const onScroll = () => {
-    if (!ticking) {
-      requestAnimationFrame(update);
-      ticking = true;
-    }
-  };
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
-  update();
+  ScrollBus.subscribe((_y, _vh, _docH, pct) => {
+    fill.style.transform = `scaleX(${pct})`;
+  });
 }
 
 function initStaggerReveal() {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (motionReduced) {
     document.querySelectorAll('.reveal-stagger > *').forEach((el) => el.classList.add('is-visible'));
     return;
   }
@@ -67,20 +91,20 @@ function initStaggerReveal() {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
           items.forEach((item, i) => {
-            item.style.setProperty('--stagger', `${i * 0.07}s`);
+            item.style.setProperty('--stagger', `${i * 0.05}s`);
             item.classList.add('is-visible');
           });
           obs.unobserve(entry.target);
         });
       },
-      { threshold: 0.12, rootMargin: '0px 0px -6% 0px' }
+      { threshold: 0.08, rootMargin: '0px 0px -4% 0px' }
     );
     obs.observe(container);
   });
 }
 
 function initParallax() {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (lowMotionDevice) return;
 
   const items = [...document.querySelectorAll('[data-parallax]')];
   if (!items.length) return;
@@ -90,30 +114,15 @@ function initParallax() {
     speed: parseFloat(el.dataset.parallax) || 0.15,
   }));
 
-  let ticking = false;
-
-  const update = () => {
-    const vh = window.innerHeight;
+  ScrollBus.subscribe((_scrollY, vh) => {
     state.forEach(({ el, speed }) => {
       const rect = el.getBoundingClientRect();
       if (rect.bottom < -80 || rect.top > vh + 80) return;
       const progress = (rect.top + rect.height * 0.5 - vh * 0.5) / vh;
-      const y = progress * speed * -90;
+      const y = progress * speed * -72;
       el.style.transform = `translate3d(0, ${y}px, 0)`;
     });
-    ticking = false;
-  };
-
-  const onScroll = () => {
-    if (!ticking) {
-      requestAnimationFrame(update);
-      ticking = true;
-    }
-  };
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
-  update();
+  });
 }
 
 function initHeroVideoScroll() {
@@ -123,10 +132,8 @@ function initHeroVideoScroll() {
   const stage = hero?.querySelector('.hero-stage--scroll');
   if (!hero || !video) return;
 
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   const ensurePlay = () => {
-    if (reduced) return;
+    if (motionReduced) return;
     const p = video.play();
     if (p && typeof p.catch === 'function') p.catch(() => {});
   };
@@ -136,49 +143,35 @@ function initHeroVideoScroll() {
     if (!document.hidden) ensurePlay();
   });
 
-  if (reduced) return;
+  if (motionReduced || lowMotionDevice) return;
 
-  let ticking = false;
-
-  const update = () => {
+  ScrollBus.subscribe((_scrollY, _vh) => {
     const rect = hero.getBoundingClientRect();
+    if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+
     const height = Math.max(rect.height, 1);
     const progress = Math.min(Math.max(-rect.top / height, 0), 1);
-    const parallaxY = progress * 140;
-    const scale = 1 + progress * 0.1;
-    const fade = Math.max(0, 1 - progress * 1.12);
+    const parallaxY = progress * 100;
+    const fade = Math.max(0, 1 - progress * 1.08);
 
-    video.style.transform = `translate3d(0, ${parallaxY}px, 0) scale(${scale})`;
+    video.style.transform = `translate3d(0, ${parallaxY}px, 0)`;
 
     if (copy) {
       copy.style.opacity = String(fade);
-      copy.style.transform = `translate3d(0, ${progress * -48}px, 0)`;
+      copy.style.transform = `translate3d(0, ${progress * -36}px, 0)`;
     }
 
     if (stage) {
       stage.style.opacity = String(fade);
-      stage.style.transform = `translate3d(0, ${progress * -32}px, 0) scale(${1 - progress * 0.03})`;
+      stage.style.transform = `translate3d(0, ${progress * -24}px, 0)`;
     }
-
-    ticking = false;
-  };
-
-  const onScroll = () => {
-    if (!ticking) {
-      requestAnimationFrame(update);
-      ticking = true;
-    }
-  };
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
-  update();
+  });
 }
 
 function initJusticeTilt() {
   const scene = document.getElementById('hero-justice-scene');
   const model = scene?.querySelector('.justice-3d');
-  if (!scene || !model || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!scene || !model || motionReduced || lowMotionDevice) return;
 
   let raf = 0;
   let targetY = 0;
@@ -204,4 +197,8 @@ function initJusticeTilt() {
     targetX = 0;
     if (!raf) raf = requestAnimationFrame(apply);
   });
+}
+
+function bootScrollBus() {
+  ScrollBus.start();
 }
