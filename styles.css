@@ -1935,9 +1935,8 @@ button.trust-item:hover .trust-more svg {
   justify-content: center;
 }
 .reveal-stagger > .philosophy-pillar {
-  transform: translate3d(0, 20px, 0) scale(0.985);
   opacity: 0;
-  transform: translateY(20px);
+  transform: translate3d(0, 20px, 0) scale(0.985);
   transition: opacity .65s var(--ease), transform .65s var(--ease);
   transition-delay: var(--stagger, 0s);
 }
