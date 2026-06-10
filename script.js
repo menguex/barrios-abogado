@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof scheduleFooterMap === 'function') scheduleFooterMap();
   initMethodJourney();
   syncContactEmailDisplay();
+  if (typeof syncCounselProfile === 'function') syncCounselProfile();
 });
 
 function syncContactEmailDisplay() {

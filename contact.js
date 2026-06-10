@@ -1,13 +1,28 @@
-/* Configuración de contacto — actualice el correo o endpoint cuando esté listo */
+/* Perfil y contacto — alineado con barriosabogado.cl */
 const COUNSEL_CONFIG = {
   fullName: 'Felipe Barrios Callejas',
+  legalName: 'Felipe Andrés Barrios Callejas',
   firstName: 'Felipe',
-  title: 'Abogado titular',
+  title: 'CEO y socio fundador',
+  roleLine: 'CEO · Barrios Abogado',
+  tagline: 'CEO · Barrios Abogado · Ovalle',
   firm: 'Barrios Abogado',
-  practiceSince: 2016,
+  website: 'https://barriosabogado.cl',
+  linkedin: 'https://cl.linkedin.com/in/felipe-andr%C3%A9s-barrios-callejas-4b3897a8',
   photo: 'assets/felipe-barrios-portrait.jpg',
   photoThumb: 'assets/felipe-barrios-thumb.jpg',
   whatsapp: '56958104264',
+  phoneDisplay: '+56 9 5810 4264',
+  shortBio:
+    'Titulado en la Universidad del Mar (La Serena), diplomatura en Derecho medioambiental en la U. de Chile. Trayectoria en civil, herencias, expropiaciones, contratos, derecho registral y minería.',
+  stripBio:
+    'Abogado con base en Ovalle. Experiencia en juicios civiles, herencias, expropiaciones, contratos, derecho registral y minería. Estrategias para la zona norte con rigor y cercanía humana.',
+  practiceTags: ['Civil y herencias', 'Derecho registral', 'Minería'],
+  signatureMeta: 'Ovalle, Chile · barriosabogado.cl',
+  quote: {
+    text: '«Rigor profesional, decisiones informadas y un acompañamiento humano cuando la situación es exigente.»',
+    cite: '— Felipe Barrios Callejas',
+  },
 };
 
 const CONTACT_CONFIG = {
@@ -17,15 +32,94 @@ const CONTACT_CONFIG = {
     city: 'Ovalle',
     region: 'Región de Coquimbo',
     street: 'Av. Manuel Peñafiel 1480',
-    office: 'Of. 316-A, 3er piso',
+    office: 'Of. 316 A, 3er piso',
     building: 'Edificio Arenas',
-    address: 'Av. Manuel Peñafiel 1480, Of. 316-A, 3er piso, Edificio Arenas — al lado del Hospital Dr. Antonio Tirado Lanas',
+    address:
+      'Manuel Peñafiel #1480, oficina 316 A, 3er piso · Edificio Arenas · Ovalle, Chile',
     lat: -30.5773804,
     lon: -71.1887003,
-    zoom: 18,
-    mapsUrl: 'https://www.google.com/maps/dir/?api=1&destination=Av.+Manuel+Pe%C3%B1afiel+1480,+Oficina+316-A,+Edificio+Arenas,+Ovalle,+Chile',
+    zoom: 17,
+    mapsUrl:
+      'https://www.google.com/maps/search/?api=1&query=Manuel%20Pe%C3%B1afiel%201480%2C%20Of.%20316%20A%2C%203er%20piso%2C%20Ovalle%2C%20Chile',
   },
 };
+
+function getAbogadoFichaPopup() {
+  const c = COUNSEL_CONFIG;
+  const loc = CONTACT_CONFIG.location;
+  return {
+    icon: 'scale',
+    title: c.fullName,
+    tagline: c.tagline,
+    dossier: true,
+    image: c.photo,
+    intro: `Soy ${c.legalName}, abogado con base en ${loc.city}, ${c.title.toLowerCase()} de ${c.firm}. ${c.shortBio}`,
+    signature: { logo: 'logo-barrios.png', firm: c.firm, meta: c.signatureMeta },
+    metrics: [
+      { icon: 'map-pin', value: loc.city, label: 'Base de atención' },
+      { icon: 'scale', value: 'Civil', label: 'Herencias y contratos' },
+      { icon: 'gem', value: 'Registral', label: 'CBRS y propiedad' },
+      { icon: 'pickaxe', value: 'Minería', label: 'Concesiones y contratos' },
+    ],
+    practiceTags: c.practiceTags,
+    blocks: [
+      {
+        icon: 'graduation-cap',
+        title: 'Formación',
+        text: 'Titulado en la Universidad del Mar, sede La Serena. Diplomatura en Derecho medioambiental en la Universidad de Chile.',
+      },
+      {
+        icon: 'landmark',
+        title: 'Experiencia judicial y civil',
+        text: 'Amplia experiencia en juicios civiles, herencias, expropiaciones y contratos.',
+      },
+      {
+        icon: 'mountain',
+        title: 'Registral y minería',
+        text: 'Experto en Derecho registral. En minería: concesiones mineras, contratos mineros, corretaje minero, pedimentos, mensuras, entre otros.',
+      },
+      {
+        icon: 'building-2',
+        title: 'Atención presencial',
+        text: `${loc.street}, ${loc.office}, ${loc.city}. ${loc.building}.`,
+      },
+    ],
+    quote: c.quote,
+    ctas: [
+      { label: 'Agendar conversación', href: 'reserva.html', style: 'primary', icon: 'calendar-check' },
+      {
+        label: 'WhatsApp directo',
+        href: `https://wa.me/${c.whatsapp}?text=${encodeURIComponent('Hola Felipe, quisiera conversar sobre mi caso.')}`,
+        style: 'wa',
+        icon: 'message-circle',
+        external: true,
+      },
+      { label: 'LinkedIn', href: c.linkedin, style: 'ghost', icon: 'linkedin', external: true },
+      { label: 'Ver ubicación', href: '#footer-map', style: 'ghost', icon: 'map-pin' },
+    ],
+  };
+}
+
+function syncCounselProfile() {
+  const c = COUNSEL_CONFIG;
+  const loc = CONTACT_CONFIG.location;
+
+  document.querySelectorAll('[data-counsel="role"]').forEach((el) => {
+    el.textContent = c.roleLine;
+  });
+  document.querySelectorAll('[data-counsel="fullName"]').forEach((el) => {
+    el.textContent = c.fullName;
+  });
+  document.querySelectorAll('[data-counsel="stripBio"]').forEach((el) => {
+    el.textContent = c.stripBio;
+  });
+  document.querySelectorAll('[data-counsel="signatureMeta"]').forEach((el) => {
+    el.textContent = c.signatureMeta;
+  });
+  document.querySelectorAll('[data-counsel="officeLine"]').forEach((el) => {
+    el.textContent = `${loc.street}, ${loc.office}`;
+  });
+}
 
 function initContactForm() {
   const form = document.getElementById('contact-form');

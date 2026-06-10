@@ -269,39 +269,14 @@ const POPUP_DATA = {
     ],
     cta: { label: 'Leer filosofía completa', href: 'filosofia.html', style: 'primary' },
   },
-  abogado_ficha: {
-    icon: 'scale',
-    title: 'Felipe Barrios Callejas',
-    tagline: 'Abogado titular · Barrios Abogado · Ovalle',
-    dossier: true,
-    image: 'assets/felipe-barrios-portrait.jpg',
-    intro: 'Abogado con trayectoria en derecho civil, familia, laboral y fraude bancario. Estrategia clara, honorarios definidos por escrito y primera evaluación en 48 horas.',
-    signature: { logo: 'logo-barrios.png', firm: 'Barrios Abogado', meta: 'Ejercicio profesional desde 2016 · Chile' },
-    metrics: [
-      { icon: 'briefcase', value: '+9', label: 'Años de ejercicio' },
-      { icon: 'zap', value: '48h', label: 'Primera evaluación' },
-      { icon: 'user-check', value: '1:1', label: 'Con su abogado', accent: true },
-    ],
-    practiceTags: ['Patrimonial', 'Familia', 'Ley 20.009', 'Laboral', 'Consumidor', 'Corporativo'],
-    blocks: [
-      { icon: 'shield-check', title: 'Civil, familia y consumidor', text: 'Enfoque patrimonial con estrategia procesal clara y honorarios definidos por etapa.' },
-      { icon: 'landmark', title: 'Ley 20.009', text: 'Defensa ante fraude bancario, clonación y operaciones no autorizadas con protocolo de restitución.' },
-      { icon: 'gavel', title: 'Tribunales y mediación', text: 'Representación en tribunales civiles, familia, JPL y mediación vía OJV cuando conviene.' },
-      { icon: 'building-2', title: 'Atención presencial', text: 'Edificio Arenas — Av. Manuel Peñafiel 1480, Of. 316-A, 3er piso, Ovalle.' },
-    ],
-    quote: {
-      text: '«La excelencia legal no es ruido en tribunales: es orden, claridad y tranquilidad en su vida.»',
-      cite: '— Felipe Barrios Callejas',
-    },
-    ctas: [
-      { label: 'Agendar con Felipe', href: 'reserva.html', style: 'primary', icon: 'calendar-check' },
-      { label: 'WhatsApp directo', href: 'https://wa.me/56958104264?text=Hola%20Felipe,%20quisiera%20conversar%20sobre%20mi%20caso.', style: 'wa', icon: 'message-circle', external: true },
-      { label: 'Ver ubicación', href: '#contacto', style: 'ghost', icon: 'map-pin' },
-    ],
-  },
+  abogado_ficha: {},
 };
 
 function initPopups() {
+  if (typeof getAbogadoFichaPopup === 'function') {
+    POPUP_DATA.abogado_ficha = getAbogadoFichaPopup();
+  }
+
   const modal = document.getElementById('info-modal');
   if (!modal) return;
 
