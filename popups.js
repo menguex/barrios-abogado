@@ -28,7 +28,7 @@ const POPUP_DATA = {
     blocks: [
       { icon: 'clock', title: 'Respuesta ágil', text: 'Revisión inicial de documentos y situación en máximo 48 horas hábiles.' },
       { icon: 'route', title: 'Ruta clara', text: 'Recibe un plan: qué conviene, qué no, y cuánto tomaría cada camino.' },
-      { icon: 'sparkles', title: 'Con asistente IA', text: 'Nuestra guía digital prepara el contexto antes de hablar con el abogado.' },
+      { icon: 'sparkles', title: 'Con asesor jurídico guiado', text: 'La guía ordena materia, pretensión y hechos antes de la entrevista con el abogado titular.' },
     ],
     cta: { label: 'Iniciar diagnóstico', href: 'reserva.html', style: 'primary' },
   },

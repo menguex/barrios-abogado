@@ -134,7 +134,9 @@ function initReservaFlow() {
     setNav(3);
     updateProgress(80, `Paso 4 de ${TOTAL}`);
     formError.hidden = true;
-    await showAi('Perfecto. Solo necesito sus datos de contacto para que Felipe Barrios Callejas le responda directamente.');
+    await showAi(
+      'Con la materia y la pretensión ya acotadas, el siguiente paso es constituir el canal de contacto. Sus datos permiten que Felipe Barrios Callejas — abogado titular — retome el expediente con contexto y sin intermediarios.'
+    );
     form.querySelector('input[name="name"]')?.focus();
   }
 

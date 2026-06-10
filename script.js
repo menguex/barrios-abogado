@@ -391,12 +391,28 @@ function initStickyCta() {
   const bar = document.getElementById('sticky-cta');
   if (!bar) return;
   const showAfter = 600;
+  const guia = document.getElementById('guia');
+  let guiaInView = false;
 
-  window.addEventListener('scroll', () => {
-    const visible = window.scrollY > showAfter;
-    bar.classList.toggle('is-visible', visible);
-    document.body.classList.toggle('sticky-visible', visible);
-  }, { passive: true });
+  const update = () => {
+    const scrolled = window.scrollY > showAfter;
+    const show = scrolled && !guiaInView;
+    bar.classList.toggle('is-visible', show);
+    bar.classList.toggle('is-hidden-in-guide', guiaInView && scrolled);
+    document.body.classList.toggle('sticky-visible', show);
+    document.body.classList.toggle('guia-in-view', guiaInView);
+  };
+
+  if (guia) {
+    const guiaObserver = new IntersectionObserver((entries) => {
+      guiaInView = entries.some((e) => e.isIntersecting && e.intersectionRatio >= 0.28);
+      update();
+    }, { threshold: [0, 0.28, 0.45, 0.6] });
+    guiaObserver.observe(guia);
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  update();
 }
 
 /* ===== NAV SCROLL SPY ===== */
