@@ -71,12 +71,43 @@ function flashTarget(el) {
   window.setTimeout(() => el.classList.remove('route-highlight'), 2400);
 }
 
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - ((-2 * t + 2) ** 3) / 2;
+}
+
+let smoothScrollRaf = 0;
+
+function smoothScrollTo(targetY, duration = 920) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    window.scrollTo(0, targetY);
+    return;
+  }
+  if (smoothScrollRaf) cancelAnimationFrame(smoothScrollRaf);
+
+  const startY = window.scrollY;
+  const distance = targetY - startY;
+  const startTime = performance.now();
+
+  function step(now) {
+    const elapsed = now - startTime;
+    const t = Math.min(elapsed / duration, 1);
+    window.scrollTo(0, startY + distance * easeInOutCubic(t));
+    if (t < 1) {
+      smoothScrollRaf = requestAnimationFrame(step);
+    } else {
+      smoothScrollRaf = 0;
+    }
+  }
+
+  smoothScrollRaf = requestAnimationFrame(step);
+}
+
 function scrollToSection(id, highlightEl) {
   const section = document.getElementById(id);
   if (!section) return false;
   const target = highlightEl || section;
   const top = section.getBoundingClientRect().top + window.scrollY - getHeaderOffset();
-  window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  smoothScrollTo(Math.max(0, top));
   flashTarget(target);
   return true;
 }

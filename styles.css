@@ -823,8 +823,8 @@ input, textarea, select, button { font-family: inherit; font-feature-settings: i
 }
 .reveal-stagger > .qa-item {
   opacity: 0;
-  transform: translate3d(0, 14px, 0);
-  transition: opacity .45s cubic-bezier(0.22, 1, 0.36, 1), transform .45s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translate3d(0, 18px, 0) scale(0.98);
+  transition: opacity .6s var(--ease), transform .6s var(--ease);
   transition-delay: var(--stagger, 0s);
 }
 .reveal-stagger > .qa-item.is-visible {
@@ -1446,8 +1446,8 @@ button.trust-item:hover .trust-more svg {
 }
 .reveal-stagger > .trust-item {
   opacity: 0;
-  transform: translateY(14px);
-  transition: opacity .6s var(--ease), transform .6s var(--ease);
+  transform: translate3d(0, 18px, 0) scale(0.985);
+  transition: opacity .65s var(--ease), transform .65s var(--ease);
   transition-delay: var(--stagger, 0s);
 }
 .reveal-stagger > .trust-item.is-visible {
@@ -1935,6 +1935,7 @@ button.trust-item:hover .trust-more svg {
   justify-content: center;
 }
 .reveal-stagger > .philosophy-pillar {
+  transform: translate3d(0, 20px, 0) scale(0.985);
   opacity: 0;
   transform: translateY(20px);
   transition: opacity .65s var(--ease), transform .65s var(--ease);
@@ -2290,6 +2291,10 @@ button.trust-item:hover .trust-more svg {
 
 /* ===== PARALLAX ===== */
 [data-parallax] { will-change: transform; backface-visibility: hidden; }
+[data-parallax-section] .container {
+  will-change: transform;
+  backface-visibility: hidden;
+}
 .hero-bg-slide { will-change: transform; }
 
 /* ===== CASOS DE ÉXITO (editorial) ===== */
@@ -3015,8 +3020,10 @@ body.sticky-visible .float-wa { bottom: calc(var(--sticky-h) + 1rem); }
 /* Reveal */
 .reveal {
   opacity: 0;
-  transform: translate3d(0, 18px, 0);
-  transition: opacity .5s cubic-bezier(0.22, 1, 0.36, 1), transform .5s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translate3d(0, 22px, 0) scale(0.992);
+  transition:
+    opacity .65s cubic-bezier(0.22, 1, 0.36, 1),
+    transform .65s cubic-bezier(0.22, 1, 0.36, 1);
   transition-delay: var(--delay, 0s);
 }
 main > section:not(.hero) .reveal {
@@ -3025,7 +3032,21 @@ main > section:not(.hero) .reveal {
 }
 .reveal.visible {
   opacity: 1;
-  transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0) scale(1);
+}
+@media (min-width: 769px) and (prefers-reduced-motion: no-preference) {
+  .reveal {
+    transform: translate3d(0, 32px, 0) scale(0.982);
+    filter: blur(6px);
+    transition:
+      opacity .88s var(--ease),
+      transform .88s var(--ease),
+      filter .88s var(--ease);
+  }
+  .reveal.visible {
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
 }
 
 /* Guide — spotlight */

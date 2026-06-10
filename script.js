@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initStaggerReveal();
   initParallax();
   initHeroVideoScroll();
+  if (typeof initSectionDrift === 'function') initSectionDrift();
   initCableSystem();
   if (typeof bootScrollBus === 'function') bootScrollBus();
   if (typeof initPopups === 'function') initPopups();
