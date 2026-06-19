@@ -396,10 +396,12 @@ function mountLegalChatWidget() {
   wrap.setAttribute('aria-label', 'Asesor digital Barrios Abogado');
   wrap.innerHTML = `
     <button type="button" class="legal-chat-launcher" data-chat-launcher aria-expanded="false" aria-controls="legal-chat-panel">
-      <span class="legal-chat-launcher-icon" aria-hidden="true"><i data-lucide="messages-square"></i></span>
-      <span class="legal-chat-launcher-text">
-        <strong>Asesor digital</strong>
-        <span>Orientación rápida</span>
+      <span class="legal-chat-launcher-glow" aria-hidden="true"></span>
+      <span class="legal-chat-launcher-icon" aria-hidden="true"><i data-lucide="sparkles"></i></span>
+      <span class="legal-chat-launcher-copy">
+        <span class="legal-chat-ia-badge">IA</span>
+        <strong>Asesor jurídico</strong>
+        <span>Orientación · no es WhatsApp</span>
       </span>
       <span class="legal-chat-launcher-pulse" aria-hidden="true"></span>
     </button>
