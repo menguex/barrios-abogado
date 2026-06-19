@@ -1,4 +1,4 @@
-/* Chat asesor — widget flotante integrado */
+/* Chat asesor — widget flotante integrado (motor local + API opcional) */
 function initLegalChat() {
   const root = document.getElementById('legal-chat-root');
   if (!root || typeof CHAT_SERVICES === 'undefined') return;
@@ -8,7 +8,11 @@ function initLegalChat() {
     busy: false,
     history: [],
     lastService: null,
+    triageStep: 0,
+    triageAnswers: {},
+    userNeed: null,
     useApi: true,
+    situationNote: '',
   };
 
   const els = {
@@ -23,8 +27,11 @@ function initLegalChat() {
   };
 
   function waLink(text) {
-    const encoded = encodeURIComponent(text);
-    return `${CHAT_CONFIG.waBase}?text=${encoded}`;
+    return `${CHAT_CONFIG.waBase}?text=${encodeURIComponent(text)}`;
+  }
+
+  function counselName() {
+    return typeof COUNSEL_CONFIG !== 'undefined' ? COUNSEL_CONFIG.fullName : CHAT_CONFIG.counsel;
   }
 
   function scrollMessages() {
@@ -37,11 +44,16 @@ function initLegalChat() {
     state.busy = on;
     els.input.disabled = on;
     els.form.querySelector('button[type="submit"]').disabled = on;
-    els.status.textContent = on ? 'Redactando…' : 'En línea';
+    els.status.textContent = on ? 'Analizando su consulta…' : 'Asesor en línea';
   }
 
   function pushMessage(role, html, meta = {}) {
-    state.history.push({ role, content: html.replace(/<[^>]+>/g, ''), meta });
+    const plain = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    state.history.push({ role, content: plain, meta });
+    if (role === 'user' && plain.length > 12) {
+      state.situationNote = plain.slice(0, 220);
+    }
+
     const wrap = document.createElement('div');
     wrap.className = `legal-chat-msg legal-chat-msg--${role}`;
     if (role === 'ai') {
@@ -80,22 +92,24 @@ function initLegalChat() {
     return new Promise((r) => setTimeout(r, ms));
   }
 
-  async function typeReply(html, minMs = 500) {
+  async function deliverReply(html, chips = [], minMs = 500) {
     setBusy(true);
-    const typing = showTyping();
-    await delay(Math.min(1400, minMs + html.length * 8));
+    showTyping();
+    await delay(Math.min(1600, minMs + Math.min(html.length, 400) * 6));
     removeTyping();
     pushMessage('ai', html);
+    renderChips(chips);
     setBusy(false);
     lucide.createIcons();
   }
 
   function renderChips(items) {
     els.chips.innerHTML = '';
-    items.forEach((item) => {
+    (items || []).forEach((item) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'legal-chat-chip';
+      if (item.urgent) btn.classList.add('legal-chat-chip--urgent');
       if (item.icon) {
         btn.innerHTML = `<i data-lucide="${item.icon}"></i><span>${item.label}</span>`;
       } else {
@@ -107,25 +121,74 @@ function initLegalChat() {
     lucide.createIcons();
   }
 
-  function serviceChips() {
-    return CHAT_SERVICES.map((s) => ({
+  function serviceChips(limit = 6) {
+    return CHAT_SERVICES.slice(0, limit).map((s) => ({
       label: s.label,
       icon: s.icon,
       action: `service:${s.id}`,
+      urgent: !!s.urgent,
     }));
   }
 
-  function ctaBlock(serviceId) {
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function detectEmotion(text) {
+    if (typeof CHAT_EMOTION_PATTERNS === 'undefined') return null;
+    const hit = CHAT_EMOTION_PATTERNS.find((e) => e.re.test(text));
+    return hit?.key || null;
+  }
+
+  function detectUrgency(text, service) {
+    if (service?.urgent) return true;
+    if (typeof CHAT_URGENCY_PATTERNS === 'undefined') return false;
+    return CHAT_URGENCY_PATTERNS.some((re) => re.test(text));
+  }
+
+  function empathyLine(emotion) {
+    if (typeof EMOTION_EMPATHY === 'undefined' || !emotion) return '';
+    const line = EMOTION_EMPATHY[emotion];
+    return line ? `<p class="legal-chat-empathy">${line}</p>` : '';
+  }
+
+  function urgencyBadge(urgent) {
+    if (!urgent) return '';
+    return '<span class="legal-chat-route-badge legal-chat-route-badge--urgent">Prioridad alta</span>';
+  }
+
+  function stepsBlock(serviceId) {
+    const area = typeof AREA_RESULTS !== 'undefined' ? AREA_RESULTS[serviceId] : null;
+    if (!area?.steps?.length) return '';
+    const items = area.steps
+      .slice(0, 3)
+      .map((step, i) => `<li><span>${i + 1}</span>${escapeHtml(step)}</li>`)
+      .join('');
+    return `<div class="legal-chat-route"><strong>Ruta orientativa del estudio</strong><ol class="legal-chat-steps">${items}</ol></div>`;
+  }
+
+  function ctaBlock(serviceId, extraWa) {
     const svc = serviceId ? CHAT_SERVICES.find((s) => s.id === serviceId) : null;
-    const waText = svc
-      ? `Hola. Consulté el asesor digital sobre ${svc.label}. Quisiera orientación del abogado titular.`
-      : 'Hola. Consulté el asesor digital de Barrios Abogado y quisiera agendar orientación.';
-  return `
-    <div class="legal-chat-cta">
-      <a href="reserva.html" class="btn btn-primary btn-sm"><i data-lucide="calendar-check"></i> Reservar consulta</a>
-      <a href="${waLink(waText)}" class="btn btn-wa btn-sm" target="_blank" rel="noopener"><i data-lucide="message-circle"></i> WhatsApp</a>
-      <a href="#guia" class="btn btn-ghost btn-sm legal-chat-link-guia"><i data-lucide="sparkles"></i> Guía completa</a>
-    </div>`;
+    const note = state.situationNote ? ` Contexto: ${state.situationNote.slice(0, 120)}.` : '';
+    const waText =
+      extraWa ||
+      (svc
+        ? `Hola. Consulté el asesor digital sobre ${svc.label}.${note} Quisiera orientación de ${counselName()}.`
+        : `Hola. Consulté el asesor digital de ${CHAT_CONFIG.firm}.${note} Quisiera agendar orientación.`);
+    return `
+      <div class="legal-chat-cta">
+        <a href="reserva.html" class="btn btn-primary btn-sm"><i data-lucide="calendar-check"></i> Reservar consulta</a>
+        <a href="${waLink(waText)}" class="btn btn-wa btn-sm" target="_blank" rel="noopener"><i data-lucide="message-circle"></i> WhatsApp</a>
+        <a href="#guia" class="btn btn-ghost btn-sm legal-chat-link-guia"><i data-lucide="sparkles"></i> Guía 3 pasos</a>
+      </div>`;
+  }
+
+  function proIntro() {
+    return `<p>Le saluda el <strong>asesor digital de ${CHAT_CONFIG.firm}</strong>. Le ayudo a ubicar su consulta, ordenar la información y preparar el contacto con <strong>${counselName()}</strong>.</p>`;
   }
 
   function detectService(text) {
@@ -136,7 +199,7 @@ function initLegalChat() {
       let s = 0;
       svc.keywords.forEach((kw) => {
         const k = kw.normalize('NFD').replace(/\p{M}/gu, '');
-        if (t.includes(k)) s += k.length > 5 ? 2 : 1;
+        if (t.includes(k)) s += k.length > 6 ? 3 : k.length > 4 ? 2 : 1;
       });
       if (s > score) {
         score = s;
@@ -150,54 +213,159 @@ function initLegalChat() {
     return CHAT_BOUNDARY_PATTERNS.some((re) => re.test(text));
   }
 
+  function buildServiceReply(svc, text, options = {}) {
+    state.lastService = svc.id;
+    const area = typeof AREA_RESULTS !== 'undefined' ? AREA_RESULTS[svc.id] : null;
+    const emotion = detectEmotion(text);
+    const urgent = detectUrgency(text, svc);
+    const title = area?.title || svc.label;
+    const summary = area?.summary || svc.teaser;
+    const need = state.userNeed || options.need;
+    let needLine = '';
+    if (need === 'act') {
+      needLine = '<p><strong>Su objetivo:</strong> activar gestiones. Conviene reservar hoy para evaluar medidas prejudiciales o conservativas.</p>';
+    } else if (need === 'diagnose') {
+      needLine = `<p><strong>Su objetivo:</strong> dictamen de viabilidad. En ~${CHAT_CONFIG.responseHours} el titular puede indicar si conviene litigar, transar o desistir.</p>`;
+    } else if (need === 'rights') {
+      needLine = '<p><strong>Su objetivo:</strong> comprender derechos y obligaciones. Le oriento el marco; la aplicación a su caso la ve el abogado con documentos.</p>';
+    } else if (need === 'prevent') {
+      needLine = '<p><strong>Su objetivo:</strong> ruta preventiva. Anticipar suele reducir costo y exposición procesal.</p>';
+    }
+
+    const clarify =
+      !options.skipClarify && svc.clarify && !state.triageAnswers.clarified
+        ? `<p class="legal-chat-clarify"><strong>Para afinar la orientación:</strong> ${svc.clarify}</p>`
+        : '';
+
+    return {
+      html: `${proIntro()}
+        ${empathyLine(emotion)}
+        <div class="legal-chat-route">
+          ${urgencyBadge(urgent)}
+          <strong>Diagnóstico preliminar · ${escapeHtml(title)}</strong>
+          <p>${escapeHtml(summary.split('.').slice(0, 2).join('.') + '.')}</p>
+        </div>
+        ${needLine}
+        ${stepsBlock(svc.id)}
+        <p>${svc.nextStep}</p>
+        ${clarify}
+        <p class="legal-chat-muted">${CHAT_CONFIG.disclaimer}</p>
+        ${ctaBlock(svc.id)}`,
+      chips: [
+        { label: 'Ver en servicios', action: `filter:${svc.filter}` },
+        ...(clarify ? [{ label: 'Ya tengo documentos', action: `clarify:${svc.id}:yes` }] : []),
+        { label: 'Otra materia', action: 'help_choose' },
+        { label: 'Reservar ahora', action: 'link:reserva.html' },
+      ],
+    };
+  }
+
+  function buildTriageStep(stepIndex) {
+    const step = CHAT_TRIAGE[stepIndex];
+    if (!step) return null;
+    return {
+      html: `${proIntro()}
+        <p><strong>Paso ${stepIndex + 1} de ${CHAT_TRIAGE.length}</strong> — ${step.question}</p>
+        <p class="legal-chat-muted">Responda con un botón o escríbalo en una frase. Así evitamos derivarlo al área equivocada.</p>`,
+      chips: step.chips,
+    };
+  }
+
+  function resolveTriageService() {
+    const nature = state.triageAnswers.nature;
+    const map = CHAT_TRIAGE[0]?.map?.[nature];
+    if (map?.length === 1) return CHAT_SERVICES.find((s) => s.id === map[0]);
+    if (map?.length > 1) {
+      return CHAT_SERVICES.find((s) => map.includes(s.id) && s.id === state.lastService) || CHAT_SERVICES.find((s) => map.includes(s.id));
+    }
+    return state.lastService ? CHAT_SERVICES.find((s) => s.id === state.lastService) : null;
+  }
+
   function buildLocalReply(text, forcedServiceId, options = {}) {
     const t = text.trim();
     const lower = t.toLowerCase();
 
-    if ((/^(hola|buenas|buenos|hey|hi)\b/.test(lower) || t.length < 3) && !options.forceService) {
+    if (options.triageAdvance) {
+      const next = buildTriageStep(state.triageStep);
+      if (next) return next;
+      const svc = resolveTriageService() || detectService(t);
+      if (svc) {
+        state.triageAnswers.clarified = true;
+        return buildServiceReply(svc, t, { need: state.userNeed });
+      }
+    }
+
+    if (/^(hola|buenas|buenos|hey|hi)\b/.test(lower) || (t.length < 3 && !options.forceService)) {
       return {
-        html: `<p>Le saluda el <strong>asesor digital de Barrios Abogado</strong>. Puedo ubicar su consulta en una de nuestras materias y preparar el contacto con Felipe Barrios Callejas.</p>
+        html: `${proIntro()}
+          <p>Puedo <strong>orientarlo paso a paso</strong>, ubicar la materia jurídica y indicarle la ruta que sigue el estudio antes de una consulta reservada.</p>
           <p class="legal-chat-muted">${CHAT_CONFIG.disclaimer}</p>
-          <p>¿Por dónde quiere empezar?</p>${ctaBlock()}`,
-        chips: [...CHAT_QUICK_START.map((q) => ({ label: q.label, action: q.action })), ...serviceChips().slice(0, 4)],
+          ${ctaBlock()}`,
+        chips: [
+          ...CHAT_QUICK_START.map((q) => ({ label: q.label, action: q.action, urgent: q.urgent })),
+          ...serviceChips(3),
+        ],
       };
     }
 
-    if (/honorario|precio|plan|costo|tarifa|cuánto cobr|cuanto cobr/.test(lower)) {
+    if (/honorario|precio|plan|costo|tarifa|cuánto cobr|cuanto cobr|valor consulta/.test(lower)) {
       return {
-        html: `<p>Los honorarios se definen <strong>por etapas</strong>, con diagnóstico inicial en ~48 horas hábiles. No publicamos cifras cerradas sin conocer el conflicto.</p>
-          <p>En <a href="planes.html">Honorarios</a> verá la lógica de cada plan; el monto concreto lo conversa con el abogado titular.</p>${ctaBlock()}`,
-        chips: [{ label: 'Ver planes', action: 'link:planes.html' }, { label: 'Reservar', action: 'link:reserva.html' }],
+        html: `<p>En ${CHAT_CONFIG.firm} los honorarios se estructuran <strong>por etapas</strong>, con diagnóstico inicial en ~${CHAT_CONFIG.responseHours}. No publicamos cifras cerradas sin conocer el conflicto — eso sería impreciso y poco profesional.</p>
+          <p>Revise la lógica en <a href="planes.html">Honorarios</a>; el monto concreto lo define ${counselName()} según complejidad y pretensión.</p>
+          ${stepsBlock(null)}
+          ${ctaBlock()}`,
+        chips: [
+          { label: 'Ver planes', action: 'link:planes.html' },
+          { label: 'Reservar diagnóstico', action: 'link:reserva.html' },
+        ],
       };
     }
 
-    if (/contacto|teléfono|telefono|correo|dirección|direccion|oficina|ovalle|ubicación|ubicacion/.test(lower)) {
+    if (/contacto|teléfono|telefono|correo|dirección|direccion|oficina|ovalle|ubicación|ubicacion|horario/.test(lower)) {
       const email = typeof CONTACT_CONFIG !== 'undefined' ? CONTACT_CONFIG.email : 'contacto@barriosabogado.cl';
       const addr = typeof CONTACT_CONFIG !== 'undefined' ? CONTACT_CONFIG.location.address : 'Manuel Peñafiel #1480, Ovalle';
       return {
-        html: `<p><strong>Barrios Abogado</strong> — ${addr}</p>
-          <p>Email: <a href="mailto:${email}">${email}</a> · WhatsApp: <a href="${waLink('Hola, quisiera contactar al estudio.')}" target="_blank" rel="noopener">+56 9 5810 4264</a></p>${ctaBlock()}`,
-        chips: [{ label: 'Formulario contacto', action: 'link:#contacto' }],
+        html: `<p><strong>${CHAT_CONFIG.firm}</strong><br>${escapeHtml(addr)}</p>
+          <p>Email: <a href="mailto:${email}">${email}</a><br>WhatsApp: <a href="${waLink('Hola, quisiera contactar al estudio.')}" target="_blank" rel="noopener">+56 9 5810 4264</a></p>
+          <p>Para un primer acercamiento formal, la <strong>reserva en línea</strong> ordena su materia y acelera la respuesta del titular.</p>
+          ${ctaBlock()}`,
+        chips: [{ label: 'Ir a contacto', action: 'link:#contacto' }, { label: 'Reservar', action: 'link:reserva.html' }],
       };
     }
 
-    if (/abogado|felipe|barrios|quién es|quien es|titular/.test(lower)) {
-      const name = typeof COUNSEL_CONFIG !== 'undefined' ? COUNSEL_CONFIG.fullName : 'Felipe Barrios Callejas';
-      const role = typeof COUNSEL_CONFIG !== 'undefined' ? COUNSEL_CONFIG.roleLine : 'CEO · Barrios Abogado';
+    if (/abogado|felipe|barrios|quién es|quien es|titular|experiencia|cv/.test(lower)) {
+      const bio = typeof COUNSEL_CONFIG !== 'undefined' ? COUNSEL_CONFIG.shortBio : 'Abogado titular en Ovalle.';
       return {
-        html: `<p><strong>${name}</strong> — ${role}. Abogado en Ovalle; civil, herencias, registral y minería.</p>
-          <p>La consulta es directa con el titular, sin intermediarios.</p>
-          <p><a href="#abogado">Ver ficha completa</a></p>${ctaBlock()}`,
+        html: `<p><strong>${counselName()}</strong> — ${typeof COUNSEL_CONFIG !== 'undefined' ? COUNSEL_CONFIG.roleLine : 'CEO · Barrios Abogado'}.</p>
+          <p>${escapeHtml(bio)}</p>
+          <p>La consulta es <strong>directa con el titular</strong>, sin intermediarios comerciales.</p>
+          <p><a href="#abogado">Ver ficha completa</a></p>
+          ${ctaBlock()}`,
         chips: [{ label: 'Reservar con Felipe', action: 'link:reserva.html' }],
       };
     }
 
-    if (isBoundaryQuestion(t)) {
-      const svc = state.lastService || detectService(t);
+    if (/penal|delito|carcel|cárcel|detenid|fiscalía penal/.test(lower)) {
       return {
-        html: `<p>Esa pregunta exige analizar <strong>hechos y documentos</strong> con criterio de abogado. No puedo darle una respuesta vinculante por chat.</p>
-          <p>Lo razonable es una <strong>consulta reservada</strong>: en 48h hábiles recibe viabilidad y ruta procesal, sin compromiso de litigar.</p>${ctaBlock(svc?.id)}`,
-        chips: serviceChips(),
+        html: `<p>El estudio se especializa en <strong>civil, familia, consumo, fraude Ley 20.009, notarial y corporativo</strong>. No patrocina materia penal.</p>
+          <p>Si su urgencia es penal, debe contactar un abogado penalista o la defensa pública. Si hay componente civil conexo (indemnización, familia), puedo orientarlo en esa parte.</p>
+          ${ctaBlock()}`,
+        chips: serviceChips(4),
+      };
+    }
+
+    if (isBoundaryQuestion(t)) {
+      const svc = state.lastService ? CHAT_SERVICES.find((s) => s.id === state.lastService) : detectService(t);
+      return {
+        html: `${empathyLine(detectEmotion(t))}
+          <p>Esa pregunta exige analizar <strong>hechos, prueba y plazos</strong> con criterio de abogado. No puedo darle una respuesta vinculante por chat — hacerlo sería poco riguroso.</p>
+          <p>Lo profesional: una <strong>consulta reservada</strong> (~${CHAT_CONFIG.responseHours}) donde ${counselName()} evalúa viabilidad y ruta procesal, sin compromiso automático de litigar.</p>
+          ${svc ? stepsBlock(svc.id) : ''}
+          ${ctaBlock(svc?.id)}`,
+        chips: [
+          { label: 'Reservar diagnóstico', action: 'link:reserva.html' },
+          ...serviceChips(3),
+        ],
       };
     }
 
@@ -206,36 +374,27 @@ function initLegalChat() {
       : detectService(t);
 
     if (svc) {
-      state.lastService = svc.id;
-      const area = typeof AREA_RESULTS !== 'undefined' ? AREA_RESULTS[svc.id] : null;
-      const summary = area?.summary || svc.teaser;
-      const shortSummary = summary.split('.').slice(0, 2).join('.') + '.';
-      return {
-        html: `<p><strong>${svc.label}</strong> — ${shortSummary}</p>
-          <p>${svc.nextStep}</p>
-          <p class="legal-chat-muted">No amplío más sin patrocinio: cada caso tiene matices probatorios.</p>
-          ${ctaBlock(svc.id)}`,
-        chips: [
-          { label: 'Saber más en servicios', action: `filter:${svc.filter}` },
-          { label: 'Otra materia', action: 'help_choose' },
-          { label: 'Reservar', action: 'link:reserva.html' },
-        ],
-      };
+      return buildServiceReply(svc, t, options);
     }
 
-    if (/ayuda|servicio|necesito|no sé|no se|orient|duda|caso/.test(lower) || forcedServiceId === null) {
+    if (/ayuda|servicio|necesito|no sé|no se|orient|duda|caso|qué hago|que hago|por dónde|por donde/.test(lower)) {
       return {
-        html: `<p>Para orientarlo bien, indique si su conflicto se acerca a alguna de estas materias del estudio:</p>
+        html: `${proIntro()}
+          <p>Para orientarlo con precisión, indique cuál se acerca más a su conflicto:</p>
           <ul class="legal-chat-list">${CHAT_SERVICES.map((s) => `<li><strong>${s.label}</strong> — ${s.teaser.split('.')[0]}.</li>`).join('')}</ul>
-          <p class="legal-chat-muted">${CHAT_CONFIG.disclaimer}</p>${ctaBlock()}`,
-        chips: serviceChips(),
+          <p>O elija <strong>«Orientarme paso a paso»</strong> y le haré 2 preguntas breves.</p>
+          <p class="legal-chat-muted">${CHAT_CONFIG.disclaimer}</p>
+          ${ctaBlock()}`,
+        chips: [{ label: 'Orientarme paso a paso', action: 'triage_start' }, ...serviceChips()],
       };
     }
 
     return {
-      html: `<p>No logré ubicar la materia con claridad. Describa en una frase el conflicto (por ejemplo: «desalojo», «fraude en tarjeta», «pensión de alimentos»).</p>
-        <p>O use la <a href="#guia">guía de 3 pasos</a> para un diagnóstico más estructurado.</p>${ctaBlock()}`,
-      chips: serviceChips(),
+      html: `<p>No logré ubicar la materia con claridad todavía.</p>
+        <p><strong>Escríbalo en una frase concreta</strong> — por ejemplo: «me desalojan el lunes», «cargo fraudulento en tarjeta», «pensión de alimentos».</p>
+        <p>También puede usar la <a href="#guia">guía de 3 pasos</a> para un diagnóstico estructurado.</p>
+        ${ctaBlock()}`,
+      chips: [{ label: 'Orientarme paso a paso', action: 'triage_start' }, ...serviceChips(4)],
     };
   }
 
@@ -246,9 +405,14 @@ function initLegalChat() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: state.history.slice(-8).map((m) => ({ role: m.role === 'ai' ? 'assistant' : 'user', content: m.content })),
+          messages: state.history.slice(-10).map((m) => ({
+            role: m.role === 'ai' ? 'assistant' : 'user',
+            content: m.content,
+          })),
           message: text,
           lastService: state.lastService,
+          userNeed: state.userNeed,
+          situationNote: state.situationNote,
         }),
       });
       if (res.status === 503) {
@@ -257,11 +421,24 @@ function initLegalChat() {
       }
       if (!res.ok) return null;
       const data = await res.json();
-      return data.reply || null;
+      return data;
     } catch {
       state.useApi = false;
       return null;
     }
+  }
+
+  function formatApiReply(data) {
+    const reply = data.reply || '';
+    const svcId = data.service || state.lastService;
+    if (data.service) state.lastService = data.service;
+    const paragraphs = escapeHtml(reply)
+      .split(/\n\n+/)
+      .filter(Boolean)
+      .map((p) => `<p>${p.replace(/\n/g, '<br>')}</p>`)
+      .join('');
+    const steps = svcId ? stepsBlock(svcId) : '';
+    return `${paragraphs}${steps}<p class="legal-chat-muted">${CHAT_CONFIG.disclaimer}</p>${ctaBlock(svcId)}`;
   }
 
   async function respondToUser(text, options = {}) {
@@ -274,10 +451,12 @@ function initLegalChat() {
     let chips = [];
 
     if (!options.skipApi) {
-      const apiReply = await tryApiReply(userText);
-      if (apiReply) {
-        html = `<p>${escapeHtml(apiReply).replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p><p class="legal-chat-muted">${CHAT_CONFIG.disclaimer}</p>${ctaBlock(state.lastService)}`;
-        chips = serviceChips().slice(0, 4);
+      const apiData = await tryApiReply(userText);
+      if (apiData?.reply) {
+        html = formatApiReply(apiData);
+        chips = apiData.chips?.length
+          ? apiData.chips.map((c) => ({ label: c.label, action: c.action, icon: c.icon }))
+          : serviceChips(4);
       }
     }
 
@@ -287,25 +466,64 @@ function initLegalChat() {
       chips = local.chips || [];
     }
 
-    await typeReply(html);
-    renderChips(chips);
+    await deliverReply(html, chips);
   }
 
-  function escapeHtml(str) {
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+  function startTriage() {
+    state.triageStep = 0;
+    state.triageAnswers = {};
+    state.userNeed = null;
+    const step = buildTriageStep(0);
+    if (step) deliverReply(step.html, step.chips, 400);
+  }
+
+  function handleTriageNature(key) {
+    state.triageAnswers.nature = key;
+    state.triageStep = 1;
+    const map = CHAT_TRIAGE[0].map[key];
+    if (map?.length === 1) state.lastService = map[0];
+    const step = buildTriageStep(1);
+    if (step) deliverReply(step.html, step.chips, 400);
+  }
+
+  function handleNeed(need) {
+    state.userNeed = need;
+    state.triageStep = 2;
+    const svc = resolveTriageService() || detectService(state.situationNote) || CHAT_SERVICES[0];
+    const local = buildServiceReply(svc, state.situationNote || 'consulta guiada', { need, skipClarify: false });
+    deliverReply(local.html, local.chips, 500);
   }
 
   function handleAction(action, label) {
+    if (action === 'triage_start') {
+      startTriage();
+      return;
+    }
     if (action === 'help_choose') {
       respondToUser('Necesito ayuda para elegir el servicio adecuado', { skipApi: true });
       return;
     }
+    if (action.startsWith('triage:')) {
+      handleTriageNature(action.split(':')[1]);
+      return;
+    }
+    if (action.startsWith('need:')) {
+      handleNeed(action.split(':')[1]);
+      return;
+    }
+    if (action.startsWith('clarify:')) {
+      const id = action.split(':')[1];
+      state.triageAnswers.clarified = true;
+      const svc = CHAT_SERVICES.find((s) => s.id === id);
+      if (svc) {
+        const local = buildServiceReply(svc, 'tengo documentación', { skipClarify: true });
+        deliverReply(local.html, local.chips, 400);
+      }
+      return;
+    }
     if (action.startsWith('service:')) {
       const id = action.split(':')[1];
+      state.lastService = id;
       respondToUser(`Me interesa orientación en ${label || id}`, { skipApi: true, serviceId: id });
       return;
     }
@@ -338,15 +556,15 @@ function initLegalChat() {
     els.input.focus();
     if (state.history.length === 0) {
       setBusy(true);
-      const typing = showTyping();
-      delay(700).then(async () => {
+      delay(650).then(async () => {
         removeTyping();
-        const local = buildLocalReply('Hola', { skipApi: true });
+        const local = buildLocalReply('Hola', { forceService: false });
         pushMessage('ai', local.html);
         renderChips(local.chips || CHAT_QUICK_START.map((q) => ({ label: q.label, action: q.action })));
         setBusy(false);
         lucide.createIcons();
       });
+      showTyping();
     }
   }
 
@@ -411,20 +629,20 @@ function mountLegalChatWidget() {
           <div class="legal-chat-header-avatar"><img src="logo-barrios.png" alt="" width="36" height="36"></div>
           <div>
             <h2 id="legal-chat-title">Asesor Barrios</h2>
-            <p data-chat-status>En línea</p>
+            <p data-chat-status>Asesor en línea</p>
           </div>
         </div>
         <button type="button" class="legal-chat-close" data-chat-close aria-label="Cerrar chat"><i data-lucide="x"></i></button>
       </header>
       <div class="legal-chat-disclaimer">
         <i data-lucide="shield-check"></i>
-        <span>Orientación preliminar · Consulta reservada con el abogado titular</span>
+        <span>Orientación preliminar · ${typeof CHAT_CONFIG !== 'undefined' ? CHAT_CONFIG.disclaimer.split('·')[0].trim() : 'Consulta reservada con el abogado titular'}</span>
       </div>
       <div class="legal-chat-messages" data-chat-messages role="log" aria-live="polite" aria-relevant="additions"></div>
       <div class="legal-chat-chips" data-chat-chips></div>
       <form class="legal-chat-form" data-chat-form>
         <label class="sr-only" for="legal-chat-input">Escriba su consulta</label>
-        <input type="text" id="legal-chat-input" data-chat-input placeholder="Ej.: fraude en mi tarjeta, desalojo…" maxlength="500" autocomplete="off">
+        <input type="text" id="legal-chat-input" data-chat-input placeholder="Cuénteme su caso en una frase…" maxlength="500" autocomplete="off">
         <button type="submit" class="legal-chat-send" aria-label="Enviar"><i data-lucide="send"></i></button>
       </form>
     </div>`;
