@@ -44,7 +44,7 @@ function initLegalChat() {
     state.busy = on;
     els.input.disabled = on;
     els.form.querySelector('button[type="submit"]').disabled = on;
-    els.status.textContent = on ? 'Analizando su consulta…' : 'Asesor en línea';
+    els.status.textContent = on ? 'Redactando opinión…' : 'Abogado disponible';
   }
 
   function pushMessage(role, html, meta = {}) {
@@ -168,7 +168,7 @@ function initLegalChat() {
       .slice(0, 3)
       .map((step, i) => `<li><span>${i + 1}</span>${escapeHtml(step)}</li>`)
       .join('');
-    return `<div class="legal-chat-route"><strong>Ruta orientativa del estudio</strong><ol class="legal-chat-steps">${items}</ol></div>`;
+    return `<div class="legal-chat-route"><strong>III. Ruta procesal sugerida</strong><ol class="legal-chat-steps">${items}</ol></div>`;
   }
 
   function ctaBlock(serviceId, extraWa) {
@@ -188,7 +188,16 @@ function initLegalChat() {
   }
 
   function proIntro() {
-    return `<p>Le saluda el <strong>asesor digital de ${CHAT_CONFIG.firm}</strong>. Le ayudo a ubicar su consulta, ordenar la información y preparar el contacto con <strong>${counselName()}</strong>.</p>`;
+    if (typeof CHAT_VOICE !== 'undefined') {
+      return `<p>${CHAT_VOICE.intro(CHAT_CONFIG.firm, counselName())}</p>`;
+    }
+    return `<p>Estimado(a) consultante: le saluda la <strong>asesoría preliminar de ${CHAT_CONFIG.firm}</strong>.</p>`;
+  }
+
+  function needLine(need) {
+    if (!need || typeof CHAT_VOICE === 'undefined') return '';
+    const text = CHAT_VOICE.need[need];
+    return text ? `<p>${text}</p>` : '';
   }
 
   function detectService(text) {
@@ -221,20 +230,9 @@ function initLegalChat() {
     const title = area?.title || svc.label;
     const summary = area?.summary || svc.teaser;
     const need = state.userNeed || options.need;
-    let needLine = '';
-    if (need === 'act') {
-      needLine = '<p><strong>Su objetivo:</strong> activar gestiones. Conviene reservar hoy para evaluar medidas prejudiciales o conservativas.</p>';
-    } else if (need === 'diagnose') {
-      needLine = `<p><strong>Su objetivo:</strong> dictamen de viabilidad. En ~${CHAT_CONFIG.responseHours} el titular puede indicar si conviene litigar, transar o desistir.</p>`;
-    } else if (need === 'rights') {
-      needLine = '<p><strong>Su objetivo:</strong> comprender derechos y obligaciones. Le oriento el marco; la aplicación a su caso la ve el abogado con documentos.</p>';
-    } else if (need === 'prevent') {
-      needLine = '<p><strong>Su objetivo:</strong> ruta preventiva. Anticipar suele reducir costo y exposición procesal.</p>';
-    }
-
     const clarify =
       !options.skipClarify && svc.clarify && !state.triageAnswers.clarified
-        ? `<p class="legal-chat-clarify"><strong>Para afinar la orientación:</strong> ${svc.clarify}</p>`
+        ? `<p class="legal-chat-clarify"><strong>Antecedente que requiero:</strong> ${svc.clarify}</p>`
         : '';
 
     return {
@@ -242,14 +240,15 @@ function initLegalChat() {
         ${empathyLine(emotion)}
         <div class="legal-chat-route">
           ${urgencyBadge(urgent)}
-          <strong>Diagnóstico preliminar · ${escapeHtml(title)}</strong>
-          <p>${escapeHtml(summary.split('.').slice(0, 2).join('.') + '.')}</p>
+          <strong>I. Opinión preliminar · ${escapeHtml(title)}</strong>
+          <p>Desde una perspectiva jurídica general, su relato se enmarca en <em>${escapeHtml(title.toLowerCase())}</em>. ${escapeHtml(summary.split('.').slice(0, 2).join('.') + '.')}</p>
         </div>
-        ${needLine}
+        ${needLine(need)}
         ${stepsBlock(svc.id)}
-        <p>${svc.nextStep}</p>
+        <p><strong>II. Consideración del estudio.</strong> ${svc.nextStep}</p>
         ${clarify}
         <p class="legal-chat-muted">${CHAT_CONFIG.disclaimer}</p>
+        <p class="legal-chat-signoff">${typeof CHAT_VOICE !== 'undefined' ? CHAT_VOICE.cierre : ''}</p>
         ${ctaBlock(svc.id)}`,
       chips: [
         { label: 'Ver en servicios', action: `filter:${svc.filter}` },
@@ -265,8 +264,9 @@ function initLegalChat() {
     if (!step) return null;
     return {
       html: `${proIntro()}
-        <p><strong>Paso ${stepIndex + 1} de ${CHAT_TRIAGE.length}</strong> — ${step.question}</p>
-        <p class="legal-chat-muted">Responda con un botón o escríbalo en una frase. Así evitamos derivarlo al área equivocada.</p>`,
+        <p><strong>Indagatoria inicial.</strong> Para individualizar correctamente su materia, le formularé ${CHAT_TRIAGE.length} preguntas breves.</p>
+        <p><strong>Paso ${stepIndex + 1} de ${CHAT_TRIAGE.length}.</strong> ${step.question}</p>
+        <p class="legal-chat-muted">Puede responder con los botones o redactar una frase. Ello evita una derivación jurídica incorrecta.</p>`,
       chips: step.chips,
     };
   }
@@ -298,7 +298,7 @@ function initLegalChat() {
     if (/^(hola|buenas|buenos|hey|hi)\b/.test(lower) || (t.length < 3 && !options.forceService)) {
       return {
         html: `${proIntro()}
-          <p>Puedo <strong>orientarlo paso a paso</strong>, ubicar la materia jurídica y indicarle la ruta que sigue el estudio antes de una consulta reservada.</p>
+          <p>Puedo asistirlo en una <strong>indagatoria preliminar</strong>: individualizar la materia, ordenar antecedentes y señalar la ruta que habitualmente sigue el estudio antes de una consulta reservada.</p>
           <p class="legal-chat-muted">${CHAT_CONFIG.disclaimer}</p>
           ${ctaBlock()}`,
         chips: [
@@ -310,9 +310,8 @@ function initLegalChat() {
 
     if (/honorario|precio|plan|costo|tarifa|cuánto cobr|cuanto cobr|valor consulta/.test(lower)) {
       return {
-        html: `<p>En ${CHAT_CONFIG.firm} los honorarios se estructuran <strong>por etapas</strong>, con diagnóstico inicial en ~${CHAT_CONFIG.responseHours}. No publicamos cifras cerradas sin conocer el conflicto — eso sería impreciso y poco profesional.</p>
-          <p>Revise la lógica en <a href="planes.html">Honorarios</a>; el monto concreto lo define ${counselName()} según complejidad y pretensión.</p>
-          ${stepsBlock(null)}
+        html: `<p><strong>Honorarios.</strong> En ${CHAT_CONFIG.firm} los honorarios se estructuran <strong>por etapas procesales</strong>, con diagnóstico inicial en ~${CHAT_CONFIG.responseHours}. No es técnicamente serio fijar montos sin conocer la complejidad del conflicto.</p>
+          <p>La lógica tarifaria se expone en <a href="planes.html">Honorarios</a>; el valor concreto lo determina ${counselName()} según pretensión, prueba disponible y vía procesal.</p>
           ${ctaBlock()}`,
         chips: [
           { label: 'Ver planes', action: 'link:planes.html' },
@@ -327,7 +326,7 @@ function initLegalChat() {
       return {
         html: `<p><strong>${CHAT_CONFIG.firm}</strong><br>${escapeHtml(addr)}</p>
           <p>Email: <a href="mailto:${email}">${email}</a><br>WhatsApp: <a href="${waLink('Hola, quisiera contactar al estudio.')}" target="_blank" rel="noopener">+56 9 5810 4264</a></p>
-          <p>Para un primer acercamiento formal, la <strong>reserva en línea</strong> ordena su materia y acelera la respuesta del titular.</p>
+          <p>Para un primer acercamiento formal, la <strong>reserva en línea</strong> permite individualizar su materia y agilizar la respuesta del abogado titular.</p>
           ${ctaBlock()}`,
         chips: [{ label: 'Ir a contacto', action: 'link:#contacto' }, { label: 'Reservar', action: 'link:reserva.html' }],
       };
@@ -338,7 +337,7 @@ function initLegalChat() {
       return {
         html: `<p><strong>${counselName()}</strong> — ${typeof COUNSEL_CONFIG !== 'undefined' ? COUNSEL_CONFIG.roleLine : 'CEO · Barrios Abogado'}.</p>
           <p>${escapeHtml(bio)}</p>
-          <p>La consulta es <strong>directa con el titular</strong>, sin intermediarios comerciales.</p>
+          <p>La atención es <strong>directa con el abogado titular</strong>, sin intermediación comercial.</p>
           <p><a href="#abogado">Ver ficha completa</a></p>
           ${ctaBlock()}`,
         chips: [{ label: 'Reservar con Felipe', action: 'link:reserva.html' }],
@@ -347,8 +346,8 @@ function initLegalChat() {
 
     if (/penal|delito|carcel|cárcel|detenid|fiscalía penal/.test(lower)) {
       return {
-        html: `<p>El estudio se especializa en <strong>civil, familia, consumo, fraude Ley 20.009, notarial y corporativo</strong>. No patrocina materia penal.</p>
-          <p>Si su urgencia es penal, debe contactar un abogado penalista o la defensa pública. Si hay componente civil conexo (indemnización, familia), puedo orientarlo en esa parte.</p>
+        html: `<p>El estudio patrocina <strong>civil, familia, consumo, fraude (Ley N° 20.009), notarial y corporativo</strong>. No asume causas de naturaleza penal.</p>
+          <p>Si su urgencia es penal, deberá contactar a un abogado penalista o a la Defensoría Penal Pública. Si existe un componente civil conexo, con gusto lo oriento en esa parte.</p>
           ${ctaBlock()}`,
         chips: serviceChips(4),
       };
@@ -358,8 +357,8 @@ function initLegalChat() {
       const svc = state.lastService ? CHAT_SERVICES.find((s) => s.id === state.lastService) : detectService(t);
       return {
         html: `${empathyLine(detectEmotion(t))}
-          <p>Esa pregunta exige analizar <strong>hechos, prueba y plazos</strong> con criterio de abogado. No puedo darle una respuesta vinculante por chat — hacerlo sería poco riguroso.</p>
-          <p>Lo profesional: una <strong>consulta reservada</strong> (~${CHAT_CONFIG.responseHours}) donde ${counselName()} evalúa viabilidad y ruta procesal, sin compromiso automático de litigar.</p>
+          <p>${typeof CHAT_VOICE !== 'undefined' ? CHAT_VOICE.limite : 'Esa pregunta exige análisis de hechos, prueba y plazos con criterio de abogado.'}</p>
+          <p>${typeof CHAT_VOICE !== 'undefined' ? CHAT_VOICE.consulta(CHAT_CONFIG.responseHours, counselName()) : `Le sugiero una consulta reservada (~${CHAT_CONFIG.responseHours}).`}</p>
           ${svc ? stepsBlock(svc.id) : ''}
           ${ctaBlock(svc?.id)}`,
         chips: [
@@ -380,9 +379,9 @@ function initLegalChat() {
     if (/ayuda|servicio|necesito|no sé|no se|orient|duda|caso|qué hago|que hago|por dónde|por donde/.test(lower)) {
       return {
         html: `${proIntro()}
-          <p>Para orientarlo con precisión, indique cuál se acerca más a su conflicto:</p>
+          <p>Para orientarlo con rigor, indique cuál de las siguientes materias se aproxima mejor a su conflicto:</p>
           <ul class="legal-chat-list">${CHAT_SERVICES.map((s) => `<li><strong>${s.label}</strong> — ${s.teaser.split('.')[0]}.</li>`).join('')}</ul>
-          <p>O elija <strong>«Orientarme paso a paso»</strong> y le haré 2 preguntas breves.</p>
+          <p>También puede solicitar una <strong>indagatoria guiada</strong> mediante el botón inferior.</p>
           <p class="legal-chat-muted">${CHAT_CONFIG.disclaimer}</p>
           ${ctaBlock()}`,
         chips: [{ label: 'Orientarme paso a paso', action: 'triage_start' }, ...serviceChips()],
@@ -390,9 +389,9 @@ function initLegalChat() {
     }
 
     return {
-      html: `<p>No logré ubicar la materia con claridad todavía.</p>
-        <p><strong>Escríbalo en una frase concreta</strong> — por ejemplo: «me desalojan el lunes», «cargo fraudulento en tarjeta», «pensión de alimentos».</p>
-        <p>También puede usar la <a href="#guia">guía de 3 pasos</a> para un diagnóstico estructurado.</p>
+      html: `<p>Aún no logro individualizar la materia con la precisión que el caso requiere.</p>
+        <p><strong>Sírvase exponer el conflicto en una sola frase</strong> — por ejemplo: «me notificaron desalojo», «cargo no reconocido en tarjeta», «demanda de alimentos».</p>
+        <p>Alternativamente, la <a href="#guia">guía estructurada</a> del sitio permite un primer dictamen ordenado.</p>
         ${ctaBlock()}`,
       chips: [{ label: 'Orientarme paso a paso', action: 'triage_start' }, ...serviceChips(4)],
     };
@@ -619,7 +618,7 @@ function mountLegalChatWidget() {
       <span class="legal-chat-launcher-copy">
         <span class="legal-chat-ia-badge">IA</span>
         <strong>Asesor jurídico</strong>
-        <span>Orientación · no es WhatsApp</span>
+        <span>Opinión preliminar · no es WhatsApp</span>
       </span>
       <span class="legal-chat-launcher-pulse" aria-hidden="true"></span>
     </button>
@@ -628,21 +627,21 @@ function mountLegalChatWidget() {
         <div class="legal-chat-header-brand">
           <div class="legal-chat-header-avatar"><img src="logo-barrios.png" alt="" width="36" height="36"></div>
           <div>
-            <h2 id="legal-chat-title">Asesor Barrios</h2>
-            <p data-chat-status>Asesor en línea</p>
+            <h2 id="legal-chat-title">Asesoría preliminar</h2>
+            <p data-chat-status>Abogado disponible</p>
           </div>
         </div>
         <button type="button" class="legal-chat-close" data-chat-close aria-label="Cerrar chat"><i data-lucide="x"></i></button>
       </header>
       <div class="legal-chat-disclaimer">
         <i data-lucide="shield-check"></i>
-        <span>Orientación preliminar · ${typeof CHAT_CONFIG !== 'undefined' ? CHAT_CONFIG.disclaimer.split('·')[0].trim() : 'Consulta reservada con el abogado titular'}</span>
+        <span>Opinión preliminar · consulta reservada con el abogado titular</span>
       </div>
       <div class="legal-chat-messages" data-chat-messages role="log" aria-live="polite" aria-relevant="additions"></div>
       <div class="legal-chat-chips" data-chat-chips></div>
       <form class="legal-chat-form" data-chat-form>
         <label class="sr-only" for="legal-chat-input">Escriba su consulta</label>
-        <input type="text" id="legal-chat-input" data-chat-input placeholder="Cuénteme su caso en una frase…" maxlength="500" autocomplete="off">
+        <input type="text" id="legal-chat-input" data-chat-input placeholder="Exponga su caso en una frase…" maxlength="500" autocomplete="off">
         <button type="submit" class="legal-chat-send" aria-label="Enviar"><i data-lucide="send"></i></button>
       </form>
     </div>`;

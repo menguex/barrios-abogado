@@ -1,13 +1,31 @@
 /* Base de conocimiento — chat asesor Barrios (orientación, no patrocinio) */
 const CHAT_CONFIG = {
-  name: 'Asesor Barrios',
+  name: 'Asesoría preliminar',
   counsel: 'Felipe Barrios Callejas',
   firm: 'Barrios Abogado',
   disclaimer:
-    'Orientación preliminar · No constituye patrocinio ni asesoría legal vinculante. El abogado titular responde en consulta reservada.',
+    'Opinión preliminar sin acceso al expediente · No constituye patrocinio ni asesoría legal vinculante. La consulta reservada con el abogado titular es la vía idónea para un dictamen fundado.',
   wa: '56958104264',
   waBase: 'https://wa.me/56958104264',
   responseHours: '48 horas hábiles',
+};
+
+/** Voz del asesor: abogado chileno, formal, claro, trato de usted */
+const CHAT_VOICE = {
+  saludo: 'Estimado(a) consultante:',
+  cierre: 'Quedo a su disposición para continuar la orientación.',
+  intro(firm, counsel) {
+    return `${this.saludo} le saluda la <strong>asesoría preliminar de ${firm}</strong>. Mi función es recibir su relato, individualizar la materia jurídica y preparar su contacto con <strong>${counsel}</strong>, abogado titular del estudio.`;
+  },
+  need: {
+    act: 'Su pretensión apunta a <strong>activar gestiones de inmediato</strong>. En derecho, la oportunidad procesal suele ser determinante; conviene reservar audiencia hoy para evaluar medidas prejudiciales o conservativas.',
+    diagnose: `Usted requiere un <strong>dictamen de viabilidad</strong>. En el estudio, el abogado titular suele entregar una primera evaluación en ~${CHAT_CONFIG.responseHours}, indicando si procede litigar, transar o desistir.`,
+    rights: 'Busca <strong>comprender el marco jurídico</strong> de su situación. Puedo orientarlo en líneas generales; la aplicación concreta a sus hechos exige revisar antecedentes y documentos.',
+    prevent: 'Su enfoque es <strong>preventivo</strong>, lo cual es jurídicamente sensato: anticipar el conflicto reduce costos, riesgo procesal y exposición patrimonial.',
+  },
+  limite: 'Esa materia exige examinar hechos, prueba y plazos con el estándar de un abogado patrocinante. Emitir una conclusión vinculante por este medio sería técnicamente improcedente.',
+  consulta: (hours, counsel) =>
+    `Le sugiero agendar una <strong>consulta reservada</strong> (plazo orientativo: ${hours}), en la cual ${counsel} podrá emitir opinión fundada sobre viabilidad y ruta procesal, sin que ello implique patrocinio automático.`,
 };
 
 const CHAT_SERVICES = [
@@ -23,8 +41,8 @@ const CHAT_SERVICES = [
       'embargo', 'hipoteca', 'compraventa',
     ],
     teaser:
-      'En materia civil patrimonial el estudio revisa contratos, arriendos (Ley 18.101), restitución de inmuebles y trámites ante el CBRS.',
-    nextStep: 'El abogado titular evaluará título, contrato y la vía prejudicial o judicial que corresponda.',
+      'En derecho civil patrimonial analizamos contratos, arrendamientos (Ley N° 18.101), acciones de restitución y tramitación ante el Conservador de Bienes Raíces.',
+    nextStep: 'Con los antecedentes en mano, el abogado titular determinará la vía prejudicial o judicial que corresponda conforme al mérito del caso.',
     clarify: '¿El conflicto es por arriendo/desalojo, herencia/sucesión o incumplimiento de contrato?',
     href: 'reserva.html',
     section: 'servicios',
@@ -40,8 +58,8 @@ const CHAT_SERVICES = [
       'régimen', 'regimen', 'compensación', 'compensacion',
     ],
     teaser:
-      'En derecho de familia trabajamos divorcio, alimentos, régimen de visitas y mediación vía OJV, priorizando el interés superior del niño.',
-    nextStep: 'Los detalles de su situación familiar los analiza Felipe Barrios en entrevista confidencial.',
+      'En derecho de familia asistimos en divorcio, alimentos, régimen de relación directa y regular, y mediación vía OJV, con estricto respeto al interés superior del niño.',
+    nextStep: 'Los aspectos fácticos y probatorios de su situación familiar serán analizados por el abogado titular en entrevista reservada y confidencial.',
     clarify: '¿Busca divorcio/separación, pensión de alimentos, visitas/cuidado personal u otro?',
     href: 'reserva.html',
     section: 'servicios',
@@ -58,8 +76,8 @@ const CHAT_SERVICES = [
       'movimiento', 'cuenta', 'app bancaria',
     ],
     teaser:
-      'Ante fraude con medio de pago, la Ley 20.009 establece plazos para que el banco restituya si se cumplen los requisitos — el banco puede resistirse.',
-    nextStep: 'Conviene actuar pronto: bloqueo, denuncia y reclamación formal. El abogado define la escalada (CMF, JPL o juicio).',
+      'Ante operaciones no autorizadas, la Ley N° 20.009 impone obligaciones de restitución a la entidad financiera, siempre que se cumplan los requisitos legales — el banco, con frecuencia, opone resistencia.',
+    nextStep: 'Le recomiendo actuar sin demora: bloqueo del producto, denuncia y reclamación formal escrita. El abogado titular definirá la escalada (CMF, JPL o vía judicial).',
     clarify: '¿Ya bloqueó la tarjeta/cuenta y presentó reclamo formal al banco?',
     href: 'reserva.html',
     section: 'servicios',
@@ -75,8 +93,8 @@ const CHAT_SERVICES = [
       'devolución', 'devolucion', 'reparación', 'reparacion',
     ],
     teaser:
-      'En relaciones de consumo se evalúan garantías legales, cláusulas abusivas y comparendos ante JPL o SERNAC.',
-    nextStep: 'La estrategia concreta — reclamo extrajudicial o demanda — la define el abogado con sus documentos.',
+      'En relaciones de consumo se examinan garantías legales, cláusulas abusivas y eventuales comparendos ante Juzgado de Policía Local o SERNAC.',
+    nextStep: 'La estrategia — reclamo extrajudicial o demanda — será definida por el abogado titular una vez revisados sus antecedentes documentales.',
     clarify: '¿Tiene boleta/contrato y ya reclamó por escrito al proveedor?',
     href: 'reserva.html',
     section: 'servicios',
@@ -91,8 +109,8 @@ const CHAT_SERVICES = [
       'notarial', 'registral', 'inscripción', 'inscripcion', 'protocolo',
     ],
     teaser:
-      'En notarial y registral se busca certeza: compraventas, testamentos, mandatos e inscripciones sin errores que generen nulidad.',
-    nextStep: 'La redacción y revisión fina la realiza el abogado titular según el objeto del acto jurídico.',
+      'En materia notarial y registral se procura certeza jurídica: compraventas, testamentos, mandatos e inscripciones, evitando vicios que puedan generar nulidad o inoponibilidad.',
+    nextStep: 'La redacción, revisión y — si corresponde — protocolización, serán realizadas por el abogado titular según el objeto del acto jurídico.',
     clarify: '¿Necesita redactar un instrumento nuevo o revisar/corregir uno ya firmado?',
     href: 'reserva.html',
     section: 'servicios',
@@ -107,8 +125,8 @@ const CHAT_SERVICES = [
       'comunidad', 'contrato mercantil', 'corporativo', 'sociedad', 'administrador',
     ],
     teaser:
-      'Para Pymes y comunidades: contratos, defensa laboral, JPL y cumplimiento de la Ley 21.442 de copropiedad.',
-    nextStep: 'El diagnóstico corporativo parte por el riesgo operativo real de su negocio o comunidad.',
+      'Para personas jurídicas, Pymes y comunidades: contratos mercantiles, defensa laboral, JPL y cumplimiento de la Ley N° 21.442 de copropiedad.',
+    nextStep: 'El diagnóstico corporativo se inicia por el riesgo operativo efectivo de su negocio o comunidad, no solo por la eventualidad de un juicio.',
     clarify: '¿El conflicto es laboral, contractual mercantil o administración de copropiedad?',
     href: 'reserva.html',
     section: 'servicios',
@@ -126,7 +144,7 @@ const CHAT_QUICK_START = [
 const CHAT_TRIAGE = [
   {
     id: 'nature',
-    question: '¿Su consulta es sobre una persona, un inmueble/patrimonio, una empresa o un cobro/fraude bancario?',
+    question: '¿Su consulta dice relación con derecho de familia, patrimonio/inmueble, empresa/comunidad, fraude bancario o relación de consumo?',
     map: {
       persona: ['familia'],
       inmueble: ['civil', 'notarial'],
@@ -144,7 +162,7 @@ const CHAT_TRIAGE = [
   },
   {
     id: 'goal',
-    question: '¿Qué busca principalmente en este momento?',
+    question: '¿Cuál es su pretensión principal en este momento?',
     chips: [
       { label: 'Saber si tengo un caso', action: 'need:diagnose' },
       { label: 'Actuar ya (plazos)', action: 'need:act', urgent: true },

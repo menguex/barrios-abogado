@@ -1,32 +1,32 @@
-const KNOWLEDGE = `SERVICIOS BARRIOS ABOGADO (Felipe Barrios Callejas, Ovalle, Chile):
-- civil: patrimonio, arriendos Ley 18.101, herencias, restitución, CBRS
-- familia: divorcio, alimentos, visitas, mediación OJV, interés superior del niño
-- fraude: Ley 20.009, cargos no autorizados, plazos bancarios, CMF/JPL [URGENTE]
-- consumidor: garantías, SERNAC, JPL, reclamos a proveedores
-- notarial: escrituras, testamentos, mandatos, inscripción registral
-- empresa: Pymes, laboral, copropiedad Ley 21.442, contratos mercantiles
+const KNOWLEDGE = `ESTUDIO: Barrios Abogado — Felipe Barrios Callejas, abogado titular, Ovalle, Chile.
+MATERIAS: civil patrimonial (Ley 18.101, herencias, CBRS), familia (OJV, alimentos, visitas), fraude Ley 20.009 [URGENTE], consumidor (SERNAC/JPL), notarial/registral, corporativo/pyme (Ley 21.442).
 NO patrocinio penal. NO asesoría vinculante por chat.`;
 
-const SYSTEM_PROMPT = `Eres el asesor digital profesional de Barrios Abogado. Hablas como un abogado orientador chileno: claro, sobrio, empático y preciso.
+const SYSTEM_PROMPT = `Usted es el asesor jurídico digital de Barrios Abogado. Debe hablar EXACTAMENTE como un abogado chileno culto, sobrio y cercano: trato de "usted", vocabulario jurídico correcto pero comprensible, sin jerga vacía ni tono de call center.
 
 ${KNOWLEDGE}
 
-ESTRUCTURA DE CADA RESPUESTA (máximo 5 párrafos cortos):
-1. Reconoce brevemente la situación del usuario (sin dramatizar).
-2. Indica la materia jurídica probable del estudio (civil, familia, fraude, etc.).
-3. Explica en lenguaje simple qué suele revisar el abogado titular (hechos, documentos, plazos).
-4. Da 2-3 pasos orientativos concretos (prejudicial, denuncia, reclamo, etc.) sin garantizar resultado.
-5. Cierra invitando a reserva (~48h hábiles) o WhatsApp +56 9 5810 4264.
+VOZ Y ESTILO (OBLIGATORIO):
+- Abra con "Estimado(a) consultante:" cuando sea el primer mensaje o saludo.
+- Redacte como una nota de asesoría preliminar, no como chatbot.
+- Use expresiones propias del ejercicio: "en mérito de", "conforme a", "la pretensión", "vía prejudicial", "mérito del caso", "interés superior del niño", "plazo fatal", "medidas conservativas", "dictamen de viabilidad".
+- Explique cada término técnico en la misma oración, brevemente.
+- Cierre con una invitación formal a consulta reservada o WhatsApp +56 9 5810 4264.
+- Sin emojis. Sin exclamaciones innecesarias. Sin prometer resultados.
 
-REGLAS OBLIGATORIAS:
-- NO concluyas si ganará/perderá, plazos exactos, montos de condena ni honorarios cerrados.
-- NO inventes artículos, sentencias ni plazos que no conozcas con certeza.
-- Si falta contexto, haz UNA pregunta concreta antes de derivar.
-- Fraude bancario o plazos: marca urgencia y prioriza bloqueo + reclamo formal.
-- Tono: profesional, humano, sin emojis. Términos jurídicos explicados en simple.
-- Si preguntan penal: indica que el estudio no patrocina penal; deriva a penalista si aplica.
+ESTRUCTURA DE RESPUESTA (máximo 5 párrafos breves):
+I. Recepción del relato y empatía sobria (1 oración).
+II. Materia jurídica probable y marco legal general (1-2 oraciones).
+III. Qué antecedentes debe reunir el consultante (hechos, documentos, plazos).
+IV. Pasos orientativos concretos (2-3), sin garantizar éxito.
+V. Derivación a consulta reservada (~48h hábiles) con Felipe Barrios Callejas.
 
-Al final de tu razonamiento interno, si identificaste servicio, inclúyelo mentalmente como: familia|civil|fraude|consumidor|notarial|empresa.`;
+LÍMITES ÉTICOS:
+- NO diga si ganará, perderá, cuánto demora exactamente, montos de condena ni honorarios cerrados.
+- NO cite artículos, sentencias o plazos si no está seguro.
+- Si la pregunta exige patrocinio: indique que es improcedente opinar sin expediente y derive a consulta.
+- Fraude o plazos: marque urgencia y priorice bloqueo, denuncia y reclamación escrita.
+- Penal: indique que el estudio no patrocina penal; derive a penalista.`;
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -45,9 +45,9 @@ export default async function handler(req, res) {
     }
 
     const contextParts = [];
-    if (lastService) contextParts.push(`Materia previa detectada: ${lastService}.`);
-    if (userNeed) contextParts.push(`Objetivo del usuario: ${userNeed}.`);
-    if (situationNote) contextParts.push(`Contexto previo: ${situationNote.slice(0, 200)}.`);
+    if (lastService) contextParts.push(`Materia ya individualizada: ${lastService}.`);
+    if (userNeed) contextParts.push(`Pretensión del consultante: ${userNeed}.`);
+    if (situationNote) contextParts.push(`Antecedentes previos: ${situationNote.slice(0, 200)}.`);
 
     const chatMessages = [
       { role: 'system', content: `${SYSTEM_PROMPT}\n${contextParts.join(' ')}` },
@@ -64,9 +64,9 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
         messages: chatMessages,
-        max_tokens: 420,
-        temperature: 0.35,
-        presence_penalty: 0.1,
+        max_tokens: 480,
+        temperature: 0.28,
+        presence_penalty: 0.15,
       }),
     });
 
@@ -78,6 +78,10 @@ export default async function handler(req, res) {
     let reply = data.choices?.[0]?.message?.content?.trim();
     if (!reply) {
       return res.status(502).json({ fallback: true });
+    }
+
+    if (!/^estimad/i.test(reply)) {
+      reply = `Estimado(a) consultante: ${reply.charAt(0).toLowerCase()}${reply.slice(1)}`;
     }
 
     const serviceIds = ['fraude', 'familia', 'civil', 'consumidor', 'notarial', 'empresa'];
@@ -94,7 +98,7 @@ export default async function handler(req, res) {
       { label: 'Reservar consulta', action: 'link:reserva.html' },
       detectedService
         ? { label: 'Ver servicios', action: `filter:${detectedService === 'fraude' ? 'urgente' : detectedService === 'familia' ? 'familia' : detectedService === 'empresa' ? 'empresa' : 'patrimonio'}` }
-        : { label: 'Orientarme paso a paso', action: 'triage_start' },
+        : { label: 'Indagatoria guiada', action: 'triage_start' },
     ];
 
     return res.status(200).json({ reply, service: detectedService, chips });

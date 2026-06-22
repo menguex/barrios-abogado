@@ -4552,6 +4552,13 @@ body.modal-open { overflow: hidden; }
   padding: .5rem .65rem;
 }
 
+.legal-chat-signoff {
+  font-size: .74rem !important;
+  font-style: italic;
+  color: var(--bone-muted) !important;
+  margin-top: .35rem !important;
+}
+
 .legal-chat-chip--urgent {
   border-color: rgba(248, 113, 113, .35);
   color: #fecaca;
