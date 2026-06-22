@@ -34,14 +34,14 @@ const POPUP_DATA = {
   },
   whatsapp: {
     icon: 'smartphone',
-    title: 'WhatsApp directo',
-    tagline: 'Sin intermediarios',
+    title: 'WhatsApp con guía IA',
+    tagline: 'Orientación jurídica antes del contacto',
     blocks: [
-      { icon: 'user-check', title: 'Con el abogado', text: 'Mensajes atendidos por Felipe Barrios Callejas, no por un bot corporativo.' },
-      { icon: 'timer', title: '< 24 horas', text: 'Consultas prioritarias con respuesta en menos de un día hábil.' },
-      { icon: 'paperclip', title: 'Envíe documentos', text: 'Fotos de contratos, denuncias o cartas del banco — todo desde el chat.' },
+      { icon: 'bot', title: 'Guía como abogado', text: 'La IA le hace preguntas breves, ordena su materia y prepara el mensaje para Felipe Barrios.' },
+      { icon: 'user-check', title: 'Luego, el abogado titular', text: 'Al final abre WhatsApp real con su caso ya redactado — sin bots corporativos.' },
+      { icon: 'paperclip', title: 'Envíe documentos', text: 'Desde el chat con Felipe puede adjuntar contratos, denuncias o cartas del banco.' },
     ],
-    cta: { label: 'Abrir WhatsApp', href: 'https://wa.me/56958104264', style: 'wa', external: true },
+    cta: { label: 'Iniciar guía WhatsApp', href: '#', style: 'wa', waGuide: true, icon: 'message-circle' },
   },
   patrimonio: {
     icon: 'home',
@@ -307,6 +307,10 @@ function initPopups() {
   }
 
   function renderCtaButton(cta) {
+    if (cta.waGuide) {
+      const icon = cta.icon || 'message-circle';
+      return `<button type="button" class="btn btn-wa wa-guide-trigger" data-open-wa-guide><i data-lucide="${icon}"></i> ${cta.label}</button>`;
+    }
     const cls = cta.style === 'wa' ? 'btn btn-wa' : cta.style === 'ghost' ? 'btn btn-ghost' : 'btn btn-primary btn-shimmer';
     const ext = cta.external ? ' target="_blank" rel="noopener"' : '';
     const icon = cta.icon || 'arrow-right';

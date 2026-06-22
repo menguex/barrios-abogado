@@ -39,7 +39,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message, messages = [], lastService, userNeed, situationNote } = req.body || {};
+    const { message, messages = [], lastService, userNeed, situationNote, channel } = req.body || {};
     if (!message || typeof message !== 'string') {
       return res.status(400).json({ error: 'Missing message' });
     }
@@ -48,6 +48,11 @@ export default async function handler(req, res) {
     if (lastService) contextParts.push(`Materia ya individualizada: ${lastService}.`);
     if (userNeed) contextParts.push(`Pretensión del consultante: ${userNeed}.`);
     if (situationNote) contextParts.push(`Antecedentes previos: ${situationNote.slice(0, 200)}.`);
+    if (channel === 'whatsapp') {
+      contextParts.push(
+        'Canal: guía previa a WhatsApp. Oriente como abogado y cierre invitando a continuar con Felipe Barrios por WhatsApp con el caso ya ordenado.'
+      );
+    }
 
     const chatMessages = [
       { role: 'system', content: `${SYSTEM_PROMPT}\n${contextParts.join(' ')}` },
