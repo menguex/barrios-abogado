@@ -185,6 +185,8 @@ function initRoutes() {
     if (!href) return;
 
     if (href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('https://wa.me')) return;
+    if (link.closest('[data-wa-guide-trigger], .wa-guide-trigger, [data-open-wa-guide]')) return;
+    if (href === '#wa-guide') return;
 
     if (href.startsWith('#')) {
       e.preventDefault();

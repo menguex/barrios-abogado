@@ -456,26 +456,47 @@ Quisiera continuar la conversación con usted.`;
 
     bindTriggers();
     enhanceFloatWa();
+    mountFloatDock();
     lucide.createIcons();
   }
 
   function enhanceFloatWa() {
     document.querySelectorAll('.float-wa').forEach((el) => {
-      el.setAttribute('data-wa-guide-trigger', '1');
-      el.setAttribute('aria-label', 'WhatsApp con guía IA');
+      let btn = el;
       if (el.tagName === 'A') {
-        el.setAttribute('data-wa-href', el.getAttribute('href') || CHAT_CONFIG.waBase);
-        el.setAttribute('href', '#wa-guide');
-        el.setAttribute('role', 'button');
+        btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = el.className;
+        btn.innerHTML = el.innerHTML;
+        el.replaceWith(btn);
       }
-      if (!el.querySelector('.float-wa-ia')) {
+      btn.setAttribute('data-wa-guide-trigger', '1');
+      btn.setAttribute('aria-label', 'WhatsApp con guía IA');
+      if (!btn.querySelector('.float-wa-ia')) {
         const badge = document.createElement('span');
         badge.className = 'float-wa-ia';
         badge.textContent = 'IA';
         badge.setAttribute('aria-hidden', 'true');
-        el.appendChild(badge);
+        btn.appendChild(badge);
       }
     });
+  }
+
+  function mountFloatDock() {
+    if (document.getElementById('float-dock')) return;
+    const legal = document.getElementById('legal-chat-root');
+    const waBtn = document.querySelector('.float-wa');
+    if (!legal || !waBtn) return;
+
+    const dock = document.createElement('div');
+    dock.id = 'float-dock';
+    dock.className = 'float-dock';
+    dock.setAttribute('aria-label', 'Asistentes de contacto');
+
+    const anchor = waBtn.parentElement;
+    anchor.insertBefore(dock, waBtn);
+    dock.appendChild(legal);
+    dock.appendChild(waBtn);
   }
 
   function bindTriggers() {
@@ -485,6 +506,7 @@ Quisiera continuar la conversación con usted.`;
         const trigger = e.target.closest('[data-wa-guide-trigger], .wa-guide-trigger, [data-open-wa-guide]');
         if (!trigger) return;
         e.preventDefault();
+        e.stopPropagation();
         openPanel();
       },
       true

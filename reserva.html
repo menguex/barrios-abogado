@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="stylesheet" href="styles.css?v=44">
+  <link rel="stylesheet" href="styles.css?v=45">
 </head>
 <body>
   <div class="sparkles" id="sparkles" aria-hidden="true"></div>
@@ -209,7 +209,7 @@
           <p class="eyebrow">¿Prefieres hablar ya?</p>
           <h2 class="footer-cta-title">WhatsApp directo con el abogado</h2>
         </div>
-        <a href="#wa-guide" class="btn btn-wa btn-lg wa-guide-trigger" data-wa-guide-trigger><i data-lucide="message-circle"></i> Abrir guía WhatsApp</a>
+        <button type="button" class="btn btn-wa btn-lg wa-guide-trigger" data-wa-guide-trigger><i data-lucide="message-circle"></i> Abrir guía WhatsApp</button>
       </div>
     </div>
     <div class="container footer-bottom" style="border:none;padding:1.5rem 0">
@@ -218,7 +218,7 @@
     </div>
   </footer>
 
-  <a href="https://wa.me/56958104264" class="float-wa" aria-label="WhatsApp"><i data-lucide="message-circle"></i></a>
+  <button type="button" class="float-wa" data-wa-guide-trigger aria-label="WhatsApp con guía IA"><i data-lucide="message-circle"></i></button>
 
   <div id="info-modal" class="info-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title" aria-modal="true">
     <div class="modal-backdrop"></div>
@@ -241,9 +241,9 @@
   <script src="contact.js?v=6"></script>
   <script src="effects.js?v=3"></script>
   <script src="popups.js?v=4"></script>
-  <script src="routes.js?v=2"></script>
+  <script src="routes.js?v=3"></script>
   <script src="legal-chat.js?v=4"></script>
-  <script src="wa-guide.js?v=1"></script>
+  <script src="wa-guide.js?v=2"></script>
   <script src="reserva.js"></script>
 </body>
 </html>

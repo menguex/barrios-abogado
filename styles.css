@@ -104,11 +104,11 @@ body::before {
     radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0, 51, 102, 0.45), transparent 55%),
     radial-gradient(ellipse 50% 40% at 100% 50%, rgba(135, 206, 235, 0.06), transparent 50%);
 }
-main, .site-header, .site-footer, .announce-bar, .sticky-cta, .float-wa { position: relative; z-index: 1; }
+main, .site-header, .site-footer, .announce-bar, .sticky-cta, .float-dock, .float-wa { position: relative; z-index: 1; }
 ::selection { background: rgba(135, 206, 235, 0.35); color: var(--bone); }
 :focus-visible { outline: 2px solid var(--brand-sky); outline-offset: 3px; }
 body.is-loading { overflow: hidden; }
-body.is-loading .announce-bar, body.is-loading .site-header, body.is-loading main, body.is-loading .site-footer, body.is-loading .float-wa, body.is-loading .sticky-cta { visibility: hidden; }
+body.is-loading .announce-bar, body.is-loading .site-header, body.is-loading main, body.is-loading .site-footer, body.is-loading .float-dock, body.is-loading .float-wa, body.is-loading .sticky-cta { visibility: hidden; }
 img { display: block; max-width: 100%; height: auto; }
 a { color: inherit; text-decoration: none; }
 .container { width: min(92%, 1240px); margin: 0 auto; }
@@ -3010,12 +3010,25 @@ button.trust-item:hover .trust-more svg {
 .sticky-cta-text span { font-size: .72rem; color: var(--text-muted); }
 .sticky-cta-actions { display: flex; gap: .5rem; }
 
-/* Float WA — derecha, círculo verde (humano) */
-.float-wa {
+/* Float dock — asesor IA + WhatsApp apilados a la derecha */
+.float-dock {
   position: fixed;
-  bottom: 5.5rem;
-  right: 1.5rem;
-  left: auto;
+  right: 1rem;
+  bottom: 1.5rem;
+  z-index: 960;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+  pointer-events: none;
+  transition: opacity .3s var(--ease), transform .3s var(--ease), visibility .3s;
+}
+.float-dock > * { pointer-events: auto; }
+body.sticky-visible .float-dock { bottom: calc(var(--sticky-h) + .65rem); }
+
+/* Float WA — círculo verde (humano + guía IA) */
+.float-wa {
+  position: relative;
   width: 54px;
   height: 54px;
   display: grid;
@@ -3024,9 +3037,13 @@ button.trust-item:hover .trust-more svg {
   color: var(--text-dark);
   border-radius: 50%;
   box-shadow: 0 6px 24px rgba(37, 211, 102, .35);
-  z-index: 900;
   transition: transform .3s var(--ease), background .3s;
   border: 2px solid rgba(0, 26, 51, 0.1);
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  appearance: none;
+  -webkit-appearance: none;
 }
 .float-wa::after {
   content: 'Guía IA + WA';
@@ -3050,7 +3067,6 @@ button.trust-item:hover .trust-more svg {
 .float-wa:hover::after { opacity: 1; }
 .float-wa svg { width: 24px; height: 24px; }
 .float-wa:hover { transform: scale(1.08) translateY(-3px); background: var(--wa-hover); color: #fff; }
-body.sticky-visible .float-wa { bottom: calc(var(--sticky-h) + 1rem); }
 
 /* Reveal */
 .reveal {
@@ -3647,11 +3663,11 @@ main > section:not(.hero) .reveal {
   .sticky-cta-actions { width: 100%; }
   .sticky-cta-actions .btn { flex: 1; }
   .sticky-cta.is-hidden-in-guide { transform: translateY(100%); }
-  body.guia-in-view .float-wa {
+  body.guia-in-view .float-dock {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transform: scale(0.85);
+    transform: scale(0.92);
   }
   .footer-grid { grid-template-columns: 1fr; text-align: center; }
   .footer-brand-block { max-width: none; margin: 0 auto; }
@@ -4205,11 +4221,8 @@ body.modal-open { overflow: hidden; }
 }
 
 .legal-chat {
-  position: fixed;
-  z-index: 960;
-  left: 1rem;
-  right: auto;
-  bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
   pointer-events: none;
 }
 .legal-chat > * { pointer-events: auto; }
@@ -4220,7 +4233,7 @@ body.modal-open { overflow: hidden; }
   align-items: center;
   gap: .7rem;
   padding: .65rem .9rem .65rem .65rem;
-  border-radius: 16px 16px 16px 6px;
+  border-radius: 16px 16px 6px 16px;
   border: 1px solid var(--border-brand);
   background: linear-gradient(145deg, rgba(0, 51, 102, .98) 0%, rgba(0, 20, 40, .96) 100%);
   color: var(--bone);
@@ -4264,7 +4277,7 @@ body.modal-open { overflow: hidden; }
 .legal-chat.is-open .legal-chat-launcher {
   opacity: 0;
   visibility: hidden;
-  transform: translateX(-8px) scale(.96);
+  transform: translateX(8px) scale(.96);
   pointer-events: none;
 }
 .legal-chat-launcher-icon {
@@ -4332,8 +4345,8 @@ body.modal-open { overflow: hidden; }
 
 .legal-chat-panel {
   position: fixed;
-  left: 1rem;
-  right: auto;
+  left: auto;
+  right: 1rem;
   bottom: 1rem;
   width: min(400px, calc(100vw - 2rem));
   max-height: min(640px, calc(100vh - 6rem));
@@ -4346,11 +4359,11 @@ body.modal-open { overflow: hidden; }
   -webkit-backdrop-filter: blur(24px);
   box-shadow: 0 28px 80px rgba(0, 0, 0, .65), 0 0 0 1px rgba(135, 206, 235, .1);
   overflow: hidden;
-  transform: translateX(-10px) translateY(12px) scale(.96);
+  transform: translateX(10px) translateY(12px) scale(.96);
   opacity: 0;
   visibility: hidden;
   transition: opacity .32s var(--ease), transform .32s var(--ease), visibility .32s;
-  transform-origin: left bottom;
+  transform-origin: right bottom;
 }
 .legal-chat.is-open .legal-chat-panel {
   transform: translateX(0) translateY(0) scale(1);
@@ -4651,16 +4664,15 @@ body.modal-open { overflow: hidden; }
 .legal-chat-send svg { width: 18px; height: 18px; }
 
 body.legal-chat-open { overflow: hidden; }
-body.sticky-visible .legal-chat { bottom: calc(var(--sticky-h) + .65rem); }
 
 @media (max-width: 768px) {
-  .legal-chat {
-    left: .65rem;
-    right: auto;
+  .float-dock {
+    right: .65rem;
     bottom: 1rem;
+    gap: 0.45rem;
   }
   .legal-chat-launcher {
-    max-width: min(210px, calc(100vw - 5.5rem));
+    max-width: min(200px, calc(100vw - 4.5rem));
     padding: .55rem .7rem .55rem .55rem;
     gap: .55rem;
   }
@@ -4684,7 +4696,7 @@ body.sticky-visible .legal-chat { bottom: calc(var(--sticky-h) + .65rem); }
     transform: translateX(0) translateY(0) scale(1);
   }
   .legal-chat-messages { max-height: min(48vh, 380px); }
-  body.sticky-visible .legal-chat { bottom: 0; }
+  body.sticky-visible .float-dock { bottom: 0; }
   body.sticky-visible.legal-chat-open .sticky-cta { transform: translateY(100%); }
 }
 
@@ -4952,5 +4964,6 @@ body.sticky-visible .wa-guide-panel { bottom: calc(var(--sticky-h) + .75rem); }
     border-radius: 16px 16px 0 0;
   }
   .wa-guide-messages { max-height: min(52vh, 420px); }
+  body.sticky-visible .float-dock { bottom: 0; }
   body.sticky-visible .wa-guide-panel { bottom: 0; }
 }

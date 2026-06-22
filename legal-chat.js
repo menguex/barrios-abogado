@@ -618,7 +618,7 @@ function mountLegalChatWidget() {
       <span class="legal-chat-launcher-copy">
         <span class="legal-chat-ia-badge">IA</span>
         <strong>Asesor jurídico</strong>
-        <span>Opinión preliminar · no es WhatsApp</span>
+        <span>Opinión preliminar · sitio web</span>
       </span>
       <span class="legal-chat-launcher-pulse" aria-hidden="true"></span>
     </button>
