@@ -612,15 +612,15 @@ function mountLegalChatWidget() {
   wrap.className = 'legal-chat';
   wrap.setAttribute('aria-label', 'Asesor digital Barrios Abogado');
   wrap.innerHTML = `
-    <button type="button" class="legal-chat-launcher" data-chat-launcher aria-expanded="false" aria-controls="legal-chat-panel">
-      <span class="legal-chat-launcher-glow" aria-hidden="true"></span>
-      <span class="legal-chat-launcher-icon" aria-hidden="true"><i data-lucide="sparkles"></i></span>
-      <span class="legal-chat-launcher-copy">
-        <span class="legal-chat-ia-badge">IA</span>
+    <button type="button" class="float-dock-btn float-dock-btn--legal legal-chat-launcher" data-chat-launcher aria-expanded="false" aria-controls="legal-chat-panel">
+      <span class="float-dock-btn-glow" aria-hidden="true"></span>
+      <span class="float-dock-btn-icon" aria-hidden="true"><i data-lucide="sparkles"></i></span>
+      <span class="float-dock-btn-copy">
+        <span class="float-dock-btn-badge">IA</span>
         <strong>Asesor jurídico</strong>
-        <span>Opinión preliminar · sitio web</span>
+        <span>Opinión preliminar · sitio</span>
       </span>
-      <span class="legal-chat-launcher-pulse" aria-hidden="true"></span>
+      <span class="float-dock-btn-pulse" aria-hidden="true"></span>
     </button>
     <div class="legal-chat-panel" id="legal-chat-panel" data-chat-panel role="dialog" aria-modal="true" aria-labelledby="legal-chat-title" hidden>
       <header class="legal-chat-header">

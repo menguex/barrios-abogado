@@ -466,19 +466,20 @@ Quisiera continuar la conversación con usted.`;
       if (el.tagName === 'A') {
         btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = el.className;
-        btn.innerHTML = el.innerHTML;
         el.replaceWith(btn);
       }
+      btn.className = 'float-dock-btn float-dock-btn--wa float-wa';
       btn.setAttribute('data-wa-guide-trigger', '1');
       btn.setAttribute('aria-label', 'WhatsApp con guía IA');
-      if (!btn.querySelector('.float-wa-ia')) {
-        const badge = document.createElement('span');
-        badge.className = 'float-wa-ia';
-        badge.textContent = 'IA';
-        badge.setAttribute('aria-hidden', 'true');
-        btn.appendChild(badge);
-      }
+      btn.innerHTML = `
+        <span class="float-dock-btn-glow" aria-hidden="true"></span>
+        <span class="float-dock-btn-icon" aria-hidden="true"><i data-lucide="message-circle"></i></span>
+        <span class="float-dock-btn-copy">
+          <span class="float-dock-btn-badge">IA</span>
+          <strong>WhatsApp guía</strong>
+          <span>Hasta contacto con Felipe</span>
+        </span>
+        <span class="float-dock-btn-pulse" aria-hidden="true"></span>`;
     });
   }
 

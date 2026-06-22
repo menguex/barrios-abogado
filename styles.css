@@ -3019,54 +3019,175 @@ button.trust-item:hover .trust-more svg {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.55rem;
+  gap: 0.5rem;
   pointer-events: none;
   transition: opacity .3s var(--ease), transform .3s var(--ease), visibility .3s;
 }
 .float-dock > * { pointer-events: auto; }
 body.sticky-visible .float-dock { bottom: calc(var(--sticky-h) + .65rem); }
 
-/* Float WA — círculo verde (humano + guía IA) */
-.float-wa {
+/* Botones dock — diseño unificado pro */
+.float-dock-btn {
   position: relative;
-  width: 54px;
-  height: 54px;
-  display: grid;
-  place-items: center;
-  background: #25d366;
-  color: var(--text-dark);
-  border-radius: 50%;
-  box-shadow: 0 6px 24px rgba(37, 211, 102, .35);
-  transition: transform .3s var(--ease), background .3s;
-  border: 2px solid rgba(0, 26, 51, 0.1);
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  width: min(248px, calc(100vw - 2rem));
+  padding: .65rem .85rem .65rem .65rem;
+  border-radius: 16px 16px 6px 16px;
+  border: 1px solid transparent;
+  color: var(--bone);
+  box-shadow:
+    0 14px 40px rgba(0, 10, 25, .5),
+    0 0 0 1px rgba(255, 255, 255, .06),
+    inset 0 1px 0 rgba(255, 255, 255, .07);
   cursor: pointer;
-  padding: 0;
   font: inherit;
+  text-align: left;
+  overflow: hidden;
   appearance: none;
   -webkit-appearance: none;
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s, opacity .25s, visibility .25s;
 }
-.float-wa::after {
-  content: 'Guía IA + WA';
+.float-dock-btn::before {
+  content: '';
   position: absolute;
-  right: calc(100% + 10px);
-  top: 50%;
-  transform: translateY(-50%);
-  padding: .35rem .65rem;
-  border-radius: 8px;
-  background: rgba(0, 20, 40, .92);
-  border: 1px solid rgba(37, 211, 102, .35);
-  color: #fff;
-  font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: .04em;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .2s var(--ease);
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-size: 200% 100%;
+  animation: cableFlow 4s linear infinite;
 }
-.float-wa:hover::after { opacity: 1; }
-.float-wa svg { width: 24px; height: 24px; }
-.float-wa:hover { transform: scale(1.08) translateY(-3px); background: var(--wa-hover); color: #fff; }
+.float-dock-btn-glow {
+  position: absolute;
+  inset: -30% auto auto -20%;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.float-dock-btn-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  border: 1px solid rgba(255, 255, 255, .12);
+}
+.float-dock-btn-icon svg { width: 22px; height: 22px; }
+.float-dock-btn-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .12rem;
+  line-height: 1.15;
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+.float-dock-btn-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: .12rem .45rem;
+  border-radius: 6px;
+  font-size: .58rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.float-dock-btn-copy strong {
+  font-size: .8rem;
+  letter-spacing: -.01em;
+  color: #fff;
+}
+.float-dock-btn-copy span:last-child {
+  font-size: .62rem;
+  color: rgba(255, 255, 255, .58);
+  line-height: 1.3;
+}
+.float-dock-btn-pulse {
+  position: absolute;
+  top: 10px;
+  left: 42px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  animation: legalChatPulse 2.4s ease infinite;
+  pointer-events: none;
+}
+.float-dock-btn:hover {
+  transform: translateY(-3px);
+}
+
+/* Variante legal — navy / cable */
+.float-dock-btn--legal {
+  border-color: rgba(135, 206, 235, .28);
+  background: linear-gradient(145deg, rgba(0, 51, 102, .98) 0%, rgba(0, 18, 36, .97) 100%);
+}
+.float-dock-btn--legal::before {
+  background: var(--cable-gradient);
+}
+.float-dock-btn--legal .float-dock-btn-glow {
+  background: radial-gradient(circle, rgba(135, 206, 235, .22), transparent 70%);
+}
+.float-dock-btn--legal .float-dock-btn-icon {
+  background: linear-gradient(135deg, var(--brand-navy), #002244);
+  border-color: rgba(135, 206, 235, .35);
+}
+.float-dock-btn--legal .float-dock-btn-icon svg { color: var(--brand-sky-light); }
+.float-dock-btn--legal .float-dock-btn-badge {
+  color: var(--brand-navy);
+  background: linear-gradient(135deg, var(--brand-sky-light), var(--brand-sky));
+  box-shadow: 0 0 12px rgba(135, 206, 235, .35);
+}
+.float-dock-btn--legal .float-dock-btn-pulse {
+  background: var(--brand-sky);
+  box-shadow: 0 0 0 0 rgba(135, 206, 235, .55);
+}
+.float-dock-btn--legal:hover {
+  border-color: var(--brand-sky);
+  box-shadow:
+    0 18px 48px rgba(0, 51, 102, .55),
+    0 0 28px rgba(135, 206, 235, .18);
+}
+
+/* Variante WhatsApp — verde pro */
+.float-dock-btn--wa {
+  border-color: rgba(37, 211, 102, .35);
+  background: linear-gradient(145deg, rgba(7, 94, 84, .98) 0%, rgba(4, 32, 28, .97) 100%);
+}
+.float-dock-btn--wa::before {
+  background: linear-gradient(90deg, transparent, #25d366, #128c7e, #25d366, transparent);
+}
+.float-dock-btn--wa .float-dock-btn-glow {
+  background: radial-gradient(circle, rgba(37, 211, 102, .2), transparent 70%);
+}
+.float-dock-btn--wa .float-dock-btn-icon {
+  background: linear-gradient(135deg, #1fa855, #0d7a45);
+  border-color: rgba(37, 211, 102, .4);
+}
+.float-dock-btn--wa .float-dock-btn-icon svg { color: #ecfdf5; }
+.float-dock-btn--wa .float-dock-btn-badge {
+  color: #053321;
+  background: linear-gradient(135deg, #4ade80, #25d366);
+  box-shadow: 0 0 12px rgba(37, 211, 102, .35);
+}
+.float-dock-btn--wa .float-dock-btn-pulse {
+  background: #25d366;
+  box-shadow: 0 0 0 0 rgba(37, 211, 102, .55);
+}
+.float-dock-btn--wa:hover {
+  border-color: #4ade80;
+  box-shadow:
+    0 18px 48px rgba(7, 94, 84, .55),
+    0 0 28px rgba(37, 211, 102, .2);
+}
+
+.float-wa { /* alias dock btn */ }
 
 /* Reveal */
 .reveal {
@@ -4207,7 +4328,7 @@ body.modal-open { overflow: hidden; }
 }
 .legal-block:last-of-type { border-bottom: none; }
 
-/* ===== CHAT ASESOR IA — izquierda, estilo distinto a WhatsApp ===== */
+/* ===== CHAT ASESOR IA + paneles ===== */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -4227,120 +4348,24 @@ body.modal-open { overflow: hidden; }
 }
 .legal-chat > * { pointer-events: auto; }
 
-.legal-chat-launcher {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: .7rem;
-  padding: .65rem .9rem .65rem .65rem;
-  border-radius: 16px 16px 6px 16px;
-  border: 1px solid var(--border-brand);
-  background: linear-gradient(145deg, rgba(0, 51, 102, .98) 0%, rgba(0, 20, 40, .96) 100%);
-  color: var(--bone);
-  box-shadow:
-    0 14px 40px rgba(0, 15, 35, .55),
-    0 0 0 1px rgba(135, 206, 235, .14),
-    inset 0 1px 0 rgba(255, 255, 255, .06);
-  cursor: pointer;
-  transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s, opacity .25s, visibility .25s;
-  max-width: min(240px, 78vw);
-  text-align: left;
-  overflow: hidden;
-}
-.legal-chat-launcher::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--cable-gradient);
-  background-size: 200% 100%;
-  animation: cableFlow 4s linear infinite;
-}
-.legal-chat-launcher-glow {
-  position: absolute;
-  inset: -30% auto auto -20%;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(135, 206, 235, .22), transparent 70%);
-  pointer-events: none;
-}
-.legal-chat-launcher:hover {
-  transform: translateY(-3px);
-  border-color: var(--brand-sky);
-  box-shadow:
-    0 18px 48px rgba(0, 51, 102, .55),
-    0 0 28px rgba(135, 206, 235, .18);
-}
-.legal-chat.is-open .legal-chat-launcher {
+.legal-chat.is-open .legal-chat-launcher,
+.legal-chat.is-open .float-dock-btn--legal {
   opacity: 0;
   visibility: hidden;
   transform: translateX(8px) scale(.96);
   pointer-events: none;
 }
-.legal-chat-launcher-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, var(--brand-navy), #002244);
-  border: 1px solid rgba(135, 206, 235, .35);
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-}
-.legal-chat-launcher-icon svg { width: 22px; height: 22px; color: var(--brand-sky-light); }
-.legal-chat-launcher-copy {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: .12rem;
-  line-height: 1.15;
-  position: relative;
-  z-index: 1;
-  min-width: 0;
-}
-.legal-chat-ia-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: .12rem .45rem;
-  border-radius: 6px;
-  font-size: .58rem;
-  font-weight: 800;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--brand-navy);
-  background: linear-gradient(135deg, var(--brand-sky-light), var(--brand-sky));
-  box-shadow: 0 0 12px rgba(135, 206, 235, .35);
-}
-.legal-chat-launcher-copy strong {
-  font-size: .8rem;
-  letter-spacing: -.01em;
-  color: var(--bone);
-}
-.legal-chat-launcher-copy span:last-child {
-  font-size: .62rem;
-  color: var(--text-muted);
-  line-height: 1.3;
-}
-.legal-chat-launcher-pulse {
-  position: absolute;
-  top: 10px;
-  left: 42px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--brand-sky);
-  box-shadow: 0 0 0 0 rgba(135, 206, 235, .55);
-  animation: legalChatPulse 2.4s ease infinite;
-  z-index: 2;
-}
+
 @keyframes legalChatPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(135, 206, 235, .5); }
   50% { box-shadow: 0 0 0 7px rgba(135, 206, 235, 0); }
+}
+.float-dock-btn--wa .float-dock-btn-pulse {
+  animation-name: waDockPulse;
+}
+@keyframes waDockPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, .5); }
+  50% { box-shadow: 0 0 0 7px rgba(37, 211, 102, 0); }
 }
 
 .legal-chat-panel {
@@ -4671,15 +4696,12 @@ body.legal-chat-open { overflow: hidden; }
     bottom: 1rem;
     gap: 0.45rem;
   }
-  .legal-chat-launcher {
-    max-width: min(200px, calc(100vw - 4.5rem));
-    padding: .55rem .7rem .55rem .55rem;
+  .float-dock-btn {
+    width: min(228px, calc(100vw - 1.5rem));
+    padding: .55rem .75rem .55rem .55rem;
     gap: .55rem;
   }
-  .legal-chat-launcher-copy span:last-child {
-    font-size: .58rem;
-  }
-  .float-wa::after { display: none; }
+  .float-dock-btn-copy span:last-child { font-size: .58rem; }
   .legal-chat-panel {
     left: 0;
     right: 0;
@@ -4701,31 +4723,10 @@ body.legal-chat-open { overflow: hidden; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .legal-chat-launcher-pulse { animation: none; }
+  .float-dock-btn-pulse { animation: none; }
   .legal-chat-panel { transition: none; }
 }
 
-/* ── WhatsApp guía IA ── */
-.float-wa-ia {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 1.1rem;
-  height: 1.1rem;
-  padding: 0 .2rem;
-  border-radius: 6px;
-  background: #003366;
-  color: #87ceeb;
-  font-size: .52rem;
-  font-weight: 800;
-  letter-spacing: .04em;
-  display: grid;
-  place-items: center;
-  border: 1.5px solid #25d366;
-  pointer-events: none;
-}
-
-.wa-guide {
   position: fixed;
   inset: 0;
   z-index: 950;
