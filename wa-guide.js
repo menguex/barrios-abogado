@@ -455,49 +455,7 @@ Quisiera continuar la conversación con usted.`;
     });
 
     bindTriggers();
-    enhanceFloatWa();
-    mountFloatDock();
     lucide.createIcons();
-  }
-
-  function enhanceFloatWa() {
-    document.querySelectorAll('.float-wa').forEach((el) => {
-      let btn = el;
-      if (el.tagName === 'A') {
-        btn = document.createElement('button');
-        btn.type = 'button';
-        el.replaceWith(btn);
-      }
-      btn.className = 'float-dock-btn float-dock-btn--wa float-wa';
-      btn.setAttribute('data-wa-guide-trigger', '1');
-      btn.setAttribute('aria-label', 'WhatsApp con guía IA');
-      btn.innerHTML = `
-        <span class="float-dock-btn-glow" aria-hidden="true"></span>
-        <span class="float-dock-btn-icon" aria-hidden="true"><i data-lucide="message-circle"></i></span>
-        <span class="float-dock-btn-copy">
-          <span class="float-dock-btn-badge">IA</span>
-          <strong>WhatsApp guía</strong>
-          <span>Hasta contacto con Felipe</span>
-        </span>
-        <span class="float-dock-btn-pulse" aria-hidden="true"></span>`;
-    });
-  }
-
-  function mountFloatDock() {
-    if (document.getElementById('float-dock')) return;
-    const legal = document.getElementById('legal-chat-root');
-    const waBtn = document.querySelector('.float-wa');
-    if (!legal || !waBtn) return;
-
-    const dock = document.createElement('div');
-    dock.id = 'float-dock';
-    dock.className = 'float-dock';
-    dock.setAttribute('aria-label', 'Asistentes de contacto');
-
-    const anchor = waBtn.parentElement;
-    anchor.insertBefore(dock, waBtn);
-    dock.appendChild(legal);
-    dock.appendChild(waBtn);
   }
 
   function bindTriggers() {
